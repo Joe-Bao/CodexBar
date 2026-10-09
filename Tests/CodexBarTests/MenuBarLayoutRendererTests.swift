@@ -1849,6 +1849,30 @@ struct MenuBarLayoutRendererTests {
         #expect(spent.attributedTitle.string == "in 2h")
     }
 
+    @Test
+    func `shipped spend conditional shows spend percent at ninety percent used`() throws {
+        let spend = try #require(MenuBarLayoutConditional.shippedLibrary().first {
+            $0.thenToken == .percent(window: .spend)
+        })
+        #expect(spend.displayName == "Spend over 90% used")
+
+        let render = { (usedPercent: Double) -> String in
+            var data = self.data()
+            data.spend = MenuBarLayoutRenderWindow(RateWindow(
+                usedPercent: usedPercent,
+                windowMinutes: nil,
+                resetsAt: nil,
+                resetDescription: nil))
+            return MenuBarLayoutRenderer().render(
+                layout: MenuBarLayout(lines: [[.conditional(id: spend.id)]]),
+                data: data,
+                icon: nil,
+                options: self.options(conditionals: [spend])).attributedTitle.string
+        }
+        #expect(render(89).isEmpty)
+        #expect(render(90) == "$ 90%")
+    }
+
     private func clause(
         metric: MenuBarConditionalMetric,
         comparison: MenuBarConditionalComparison,

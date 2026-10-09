@@ -396,6 +396,12 @@ struct MenuBarLayoutConditional: Codable, Hashable, Sendable {
                 clauses: [self.clause(.automatic, .greaterThanOrEqual, 1, direction: .remaining)],
                 thenToken: .percent(window: .automatic),
                 elseToken: .resetCountdown),
+            MenuBarLayoutConditional(
+                id: self.fixedID("BA292E63-E981-484D-BD7F-6D70058F1282"),
+                name: L("menu_bar_layout_conditional_default_spend_high"),
+                clauses: [self.clause(.spend, .greaterThanOrEqual, 90)],
+                thenToken: .percent(window: .spend),
+                elseToken: .hidden),
         ]
     }
 

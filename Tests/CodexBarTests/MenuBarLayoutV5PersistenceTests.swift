@@ -182,6 +182,12 @@ struct MenuBarLayoutV5PersistenceTests {
         for blob in [blobs.v4, blobs.v3, blobs.released, blobs.legacy] {
             #expect(try decoder.decode([V4Rule].self, from: blob).map(\.id) == [readable.id])
         }
+
+        // The shipped Spend rule is dropped the same way; every other shipped rule still reaches 0.73.0.
+        let shipped = MenuBarLayoutConditional.shippedLibrary()
+        let shippedV4 = try decoder.decode([V4Rule].self, from: MenuBarLayoutPersistence.encodedLibrary(shipped).v4)
+        #expect(shipped.contains { !$0.hasV4Representation })
+        #expect(shippedV4.map(\.id) == shipped.filter(\.hasV4Representation).map(\.id))
     }
 
     @Test
