@@ -48,6 +48,48 @@ struct StatusItemSpendSignatureTests {
         #expect(harness.component("layoutResets", used: 420, resetsInDays: 20) != early)
     }
 
+    @Test
+    func `spend percent predicate moves the conditional window component alone`() {
+        let harness = Self.makeHarness(metric: .spend, comparison: .greaterThan, threshold: 50)
+        defer { harness.controller.releaseStatusItemsForTesting() }
+
+        let below = harness.component("layoutCondWindows", used: 420)
+        #expect(below?.hasPrefix("layoutCondWindows=spend=") == true)
+        #expect(harness.component("layoutCondWindows", used: 550) != below)
+        #expect(harness.component("layoutSpend", used: 420) == "layoutSpend=nil")
+    }
+
+    @Test
+    func `spend reset predicate follows a moved period boundary`() {
+        let harness = Self.makeHarness(metric: .spendResetsIn, comparison: .lessThan, threshold: 48)
+        defer { harness.controller.releaseStatusItemsForTesting() }
+
+        let early = harness.component("layoutCondWindows", used: 420, resetsInDays: 1)
+        #expect(early?.hasPrefix("layoutCondWindows=spendResetsIn=") == true)
+        #expect(harness.component("layoutCondWindows", used: 420, resetsInDays: 20) != early)
+    }
+
+    @Test
+    func `spend pace predicate moves the pace component`() {
+        let harness = Self.makeHarness(metric: .spendPace, comparison: .greaterThan, threshold: 5)
+        defer { harness.controller.releaseStatusItemsForTesting() }
+
+        // Twelve days from the reset, 20% used is well behind the even pace and 80% well ahead of it.
+        #expect(harness.component("layoutPace", used: 200)?.hasPrefix("layoutPace=spend=-") == true)
+        #expect(harness.component("layoutPace", used: 800)?.hasPrefix("layoutPace=spend=+") == true)
+    }
+
+    @Test
+    func `spend amount predicate signs the unrounded USD figures`() {
+        let harness = Self.makeHarness(metric: .spendAmount, comparison: .greaterThan, threshold: 420.005)
+        defer { harness.controller.releaseStatusItemsForTesting() }
+
+        // Both amounts display as "$420", so only the exact USD figure can tell them apart.
+        let below = harness.component("layoutSpend", used: 420.00, limit: 100_000)
+        #expect(below?.contains("usedUSD=unused") == false)
+        #expect(harness.component("layoutSpend", used: 420.01, limit: 100_000) != below)
+    }
+
     @MainActor
     private struct Harness {
         let store: UsageStore
@@ -79,11 +121,35 @@ struct StatusItemSpendSignatureTests {
         }
     }
 
-    private static func makeHarness(lines: [[MenuBarLayoutToken]]) -> Harness {
+    /// A layout whose only link to the budget is a conditional predicate: no spend token is placed.
+    private static func makeHarness(
+        metric: MenuBarConditionalMetric,
+        comparison: MenuBarConditionalComparison,
+        threshold: Double)
+        -> Harness
+    {
+        let conditional = MenuBarLayoutConditional(
+            name: "gate",
+            clauses: [MenuBarConditionalClause(
+                combinator: nil,
+                predicate: MenuBarConditionalPredicate(metric: metric, comparison: comparison, threshold: threshold))],
+            thenToken: .providerName,
+            elseToken: .hidden)
+        return self.makeHarness(
+            lines: [[.icon, .conditional(id: conditional.id)]],
+            conditionals: [conditional])
+    }
+
+    private static func makeHarness(
+        lines: [[MenuBarLayoutToken]],
+        conditionals: [MenuBarLayoutConditional] = [])
+        -> Harness
+    {
         let settings = testSettingsStore(suiteName: "StatusItemSpendSignatureTests")
         settings.statusChecksEnabled = false
         settings.refreshFrequency = .manual
         settings.menuBarShowsBrandIconWithPercent = true
+        settings.menuBarLayoutConditionals = conditionals
         settings.menuBarLayout = MenuBarLayout(lines: lines)
         if let claudeMeta = ProviderRegistry.shared.metadata[.claude] {
             settings.setProviderEnabled(provider: .claude, metadata: claudeMeta, enabled: true)

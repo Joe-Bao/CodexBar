@@ -168,6 +168,12 @@ struct MenuBarSpendLimitTests {
         let expectedLimit = UsageFormatter.compactCurrencyString(limitUSD, currencyCode: "USD")
         #expect(sterling.amountText(preferredCurrency: "USD") == expectedUsed)
         #expect(sterling.budgetText(preferredCurrency: "USD") == "\(expectedUsed) / \(expectedLimit)")
+
+        // Predicate thresholds are USD, and a currency with no exchange rate yields no datum.
+        #expect(sterling.usedUSD == usedUSD)
+        let unrated = MenuBarSpendLimit(window: sterling.window, cost: self.monthlyBudget(currencyCode: "XXX"))
+        #expect(unrated.usedUSD == nil)
+        #expect(unrated.remainingUSD == nil)
     }
 
     @Test
@@ -216,6 +222,7 @@ struct MenuBarSpendLimitTests {
             now: self.now)
         #expect(spend.amount == "$460")
         #expect(spend.budget == "$460 / $1,000")
+        #expect(spend.remainingUSD == 540)
     }
 
     @Test

@@ -142,6 +142,7 @@ extension StatusItemController {
             case .weeklyResetsIn: windows.weekly
             case .scopedWeeklyResetsIn: scopedWeekly
             case .automaticResetsIn: windows.automatic
+            case .spendResetsIn: windows.spend
             default: nil
             }
             guard let resetsAt = window?.resetsAt else { return nil }
