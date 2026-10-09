@@ -95,11 +95,11 @@ read_when:
 | Group | Tokens | Behavior |
 | --- | --- | --- |
 | Identity | Icon, Provider name, Account | Provider-scoped branding and identity |
-| Usage | Session %, Weekly %, Scoped weekly %, Auto %, Usage bar | Window percentage or a compact three-glyph usage bar |
+| Usage | Session %, Weekly %, Scoped weekly %, Auto %, Spend %, Usage bar | Window percentage or a compact three-glyph usage bar |
 | Usage | Named allowances (Cursor Grok Bot, Antigravity family weekly quotas) | Own label and percentage; a saved selection shows a dash when unavailable |
-| Usage | Session pace, Weekly pace, Auto pace | Signed pace delta for that window |
-| Time | Resets in, Reset at (automatic, Session, Weekly), Runs out | Selected-window relative reset, absolute reset, or pace estimate |
-| Money | Balance, Cost today, Cost (History window) | Provider balance or remaining credits, or local cost estimate. Cost (History window) is the total for the selected [History window](cost-reporting-periods.md), and cost thresholds compare that window's total |
+| Usage | Session pace, Weekly pace, Auto pace, Spend pace | Signed pace delta for that window |
+| Time | Resets in, Reset at (automatic, Session, Weekly, Spend), Runs out | Selected-window relative reset, absolute reset, or pace estimate |
+| Money | Balance, Cost today, Cost (History window), Spend, Spend / budget | Provider balance or remaining credits, or local cost estimate. Cost (History window) is the total for the selected [History window](cost-reporting-periods.md), and cost thresholds compare that window's total. Spend and Spend / budget show the provider-reported amount spent, alone or against its budget |
 | Structure | Separator dot, Space, Line break | Spacing and optional two-line composition |
 
 The pace tokens render the same delta the menu card shows as "in deficit"/"in reserve", in the compact signed form the
@@ -117,9 +117,9 @@ pace stays an en dash. The menu card's reserve/deficit wording and the numeric m
 do not change: positive pace thresholds still mean usage ahead of pace.
 
 Enable **Color Pace Indicator** under **Menu Bar → Icon** to show usage behind pace (reserve) in green and usage ahead
-of pace (risk of running out early) in red. The option defaults off, applies to all three pace tokens and the layout
+of pace (risk of running out early) in red. The option defaults off, applies to all four pace tokens and the layout
 preview, and keeps the signed percentages. Zero and unavailable pace stay neutral; stale pace colors are dimmed unless high-contrast rendering is active.
-It colors **Session pace**, **Weekly pace**, and **Auto pace** in the layout editor. Enabling it does not add tokens,
+It colors **Session pace**, **Weekly pace**, **Auto pace**, and **Spend pace** in the layout editor. Enabling it does not add tokens,
 rewrite stored layouts, or migrate legacy display modes. Existing installs stay monochrome until the option is enabled.
 These colors keep the same meaning with either pace sign: reserve is green and deficit is red.
 

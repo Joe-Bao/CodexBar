@@ -2,6 +2,10 @@
 
 ## 0.75.1 — Unreleased
 
+### Added
+
+- Menu bar: add Spend layout items and conditional rules for providers that report a spend budget, such as Claude Enterprise (#TBD). Thanks @benjschiller!
+
 ## 0.75.0 — 2026-10-13
 
 ### Highlights
