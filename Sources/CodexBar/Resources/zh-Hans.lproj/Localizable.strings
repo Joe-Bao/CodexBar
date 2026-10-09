@@ -1455,6 +1455,9 @@
 "menu_bar_layout_token_runs_out" = "预计用尽";
 "menu_bar_layout_token_cost_today" = "今日费用";
 "menu_bar_layout_token_cost_window" = "费用（历史窗口）";
+"menu_bar_layout_token_spend" = "花费 %";
+"menu_bar_layout_token_spend_pace" = "花费节奏";
+"menu_bar_layout_token_spend_budget" = "花费 / 预算";
 "menu_bar_layout_token_space" = "空格";
 "menu_bar_layout_token_line_break" = "换行";
 "menu_bar_layout_token_separator_accessibility" = "分隔点";

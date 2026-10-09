@@ -1453,6 +1453,9 @@
 "menu_bar_layout_token_runs_out" = "ينفد";
 "menu_bar_layout_token_cost_today" = "تكلفة اليوم";
 "menu_bar_layout_token_cost_window" = "تكلفة (نافذة التاريخ)";
+"menu_bar_layout_token_spend" = "الإنفاق %";
+"menu_bar_layout_token_spend_pace" = "وتيرة الإنفاق";
+"menu_bar_layout_token_spend_budget" = "الإنفاق / الميزانية";
 "menu_bar_layout_token_space" = "مسافة";
 "menu_bar_layout_token_line_break" = "فاصل سطر";
 "menu_bar_layout_token_separator_accessibility" = "نقطة فاصلة";

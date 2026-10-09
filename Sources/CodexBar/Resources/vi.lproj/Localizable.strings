@@ -1450,6 +1450,9 @@
 "menu_bar_layout_token_runs_out" = "Sắp hết";
 "menu_bar_layout_token_cost_today" = "Chi phí hôm nay";
 "menu_bar_layout_token_cost_window" = "Chi phí (Cửa sổ lịch sử)";
+"menu_bar_layout_token_spend" = "Chi phí %";
+"menu_bar_layout_token_spend_pace" = "Tốc độ chi phí";
+"menu_bar_layout_token_spend_budget" = "Chi phí / ngân sách";
 "menu_bar_layout_token_space" = "Khoảng trắng";
 "menu_bar_layout_token_line_break" = "Ngắt dòng";
 "menu_bar_layout_token_separator_accessibility" = "Dấu chấm phân cách";

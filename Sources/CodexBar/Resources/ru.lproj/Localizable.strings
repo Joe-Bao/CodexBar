@@ -1451,6 +1451,9 @@
 "menu_bar_layout_token_runs_out" = "Закончится";
 "menu_bar_layout_token_cost_today" = "Расход сегодня";
 "menu_bar_layout_token_cost_window" = "Расход (Окно истории)";
+"menu_bar_layout_token_spend" = "Расходы %";
+"menu_bar_layout_token_spend_pace" = "Темп расходов";
+"menu_bar_layout_token_spend_budget" = "Расходы / бюджет";
 "menu_bar_layout_token_space" = "Пробел";
 "menu_bar_layout_token_line_break" = "Разрыв строки";
 "menu_bar_layout_token_separator_accessibility" = "Точка-разделитель";

@@ -6,6 +6,7 @@ enum PercentWindow: String, CaseIterable, Codable, Hashable, Sendable {
     case weekly
     case scopedWeekly
     case automatic
+    case spend
 
     /// Shared by the simplified picker and legacy layout migration.
     static func forMetric(
@@ -33,7 +34,7 @@ enum PercentWindow: String, CaseIterable, Codable, Hashable, Sendable {
         return switch self {
         case .session: presentation.menuBarLayoutPrimaryLabel.map(L)
         case .weekly: presentation.menuBarLayoutSecondaryLabel.map(L)
-        case .scopedWeekly, .automatic: nil
+        case .scopedWeekly, .automatic, .spend: nil
         }
     }
 }
@@ -509,6 +510,8 @@ enum MenuBarLayoutToken: Codable, Hashable, Sendable {
     case tokensPerMinute
     case tokensSparkline
     case costWindow
+    case spendAmount
+    case spendBudget
     case separatorDot
     case space
     /// Renders nothing; used as a conditional branch value to hide output for the other case.
@@ -524,6 +527,7 @@ enum MenuBarLayoutToken: Codable, Hashable, Sendable {
         case resetCountdown, resetAbsolute, windowResetCountdown, windowResetAbsolute
         case runsOut, runsOutCompact, balance, costToday, tokensPerMinute, tokensSparkline
         case costWindow = "cost30d"
+        case spendAmount, spendBudget
         case separatorDot, space, hidden, conditional
     }
 

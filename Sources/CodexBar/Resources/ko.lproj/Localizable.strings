@@ -1419,6 +1419,9 @@
 "menu_bar_layout_token_runs_out" = "소진";
 "menu_bar_layout_token_cost_today" = "오늘 비용";
 "menu_bar_layout_token_cost_window" = "비용 (기록 범위)";
+"menu_bar_layout_token_spend" = "지출 %";
+"menu_bar_layout_token_spend_pace" = "지출 속도";
+"menu_bar_layout_token_spend_budget" = "지출 / 예산";
 "menu_bar_layout_token_space" = "공백";
 "menu_bar_layout_token_line_break" = "줄 바꿈";
 "menu_bar_layout_token_separator_accessibility" = "구분점";

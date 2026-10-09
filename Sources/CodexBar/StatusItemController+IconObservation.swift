@@ -73,6 +73,9 @@ extension StatusItemController {
         let layoutConditionalWindowSignature = showBrandPercent
             ? self.storedMenuBarLayoutConditionalWindowSignature(for: provider, snapshot: snapshot)
             : nil
+        let layoutSpendSignature = showBrandPercent
+            ? self.storedMenuBarLayoutSpendSignature(for: provider, snapshot: snapshot)
+            : nil
 
         return [
             provider.rawValue,
@@ -95,6 +98,7 @@ extension StatusItemController {
             "layoutLanes=\(layoutLaneSignature ?? "nil")",
             "layoutResets=\(layoutResetSignature ?? "nil")",
             "layoutCondWindows=\(layoutConditionalWindowSignature ?? "nil")",
+            "layoutSpend=\(layoutSpendSignature ?? "nil")",
         ].joined(separator: "|")
     }
 
@@ -240,8 +244,12 @@ extension StatusItemController {
                 let window: RateWindow? = switch percentWindow {
                 case .session: windows.session
                 case .weekly: windows.weekly
-                case .scopedWeekly: nil
+                case .scopedWeekly, .spend: nil
                 case .automatic: windows.automatic
+                }
+                if percentWindow == .spend {
+                    let spendPace = self.store.menuBarLayoutSpend(provider: provider, snapshot: snapshot, now: now).pace
+                    return "\(percentWindow.rawValue)=\(spendPace ?? "nil")"
                 }
                 let pace = self.store.menuBarLayoutPaceText(
                     provider: provider,
@@ -339,6 +347,29 @@ extension StatusItemController {
                     "@\(Self.exactSignatureValue(resetsAt))"
             }
             .joined(separator: ",")
+    }
+
+    /// Spend percent and money tokens read provider cost data that no other signature component covers. Spend
+    /// pace and reset tokens are signed by the pace and reset components.
+    private func storedMenuBarLayoutSpendSignature(for provider: UsageProvider, snapshot: UsageSnapshot?) -> String? {
+        let resolution = self.renderedMenuBarLayoutResolution(for: provider)
+        guard !resolution.usesLegacyRendering else { return nil }
+        let tokens = resolution.layout.flattenedTokens(conditionals: self.settings.menuBarLayoutConditionals)
+        guard tokens.contains(where: Self.readsSpend) else { return nil }
+
+        let spend = self.store.menuBarLayoutSpend(provider: provider, snapshot: snapshot, now: Date())
+        return [
+            "used=\(Self.iconSignatureValue(spend.window?.usedPercent))",
+            "amount=\(spend.amount ?? "nil")",
+            "budget=\(spend.budget ?? "nil")",
+        ].joined(separator: ",")
+    }
+
+    private static func readsSpend(_ token: MenuBarLayoutToken) -> Bool {
+        switch token {
+        case .percent(window: .spend), .spendAmount, .spendBudget: true
+        default: false
+        }
     }
 
     private static func laneWindow(_ lane: MenuBarLayoutLane, in windows: MenuBarLayoutWindows) -> RateWindow? {

@@ -1480,6 +1480,9 @@
 "menu_bar_layout_token_runs_out" = "預計用盡";
 "menu_bar_layout_token_cost_today" = "今日費用";
 "menu_bar_layout_token_cost_window" = "費用（歷史時段）";
+"menu_bar_layout_token_spend" = "支出 %";
+"menu_bar_layout_token_spend_pace" = "支出節奏";
+"menu_bar_layout_token_spend_budget" = "支出 / 預算";
 "menu_bar_layout_token_space" = "空格";
 "menu_bar_layout_token_line_break" = "換行";
 "menu_bar_layout_token_separator_accessibility" = "分隔點";

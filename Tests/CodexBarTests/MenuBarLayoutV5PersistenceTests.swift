@@ -85,6 +85,22 @@ struct MenuBarLayoutV5PersistenceTests {
         #expect(returned.menuBarLayout == layout)
     }
 
+    @Test
+    func `spend token discriminators stay stable and round trip`() throws {
+        let fixtures: [(MenuBarLayoutToken, String)] = [
+            (.percent(window: .spend), #"{"percent":{"window":"spend"}}"#),
+            (.pace(window: .spend), #"{"pace":{"window":"spend"}}"#),
+            (.windowResetCountdown(window: .spend), #"{"windowResetCountdown":{"window":"spend"}}"#),
+            (.windowResetAbsolute(window: .spend), #"{"windowResetAbsolute":{"window":"spend"}}"#),
+            (.spendAmount, #"{"spendAmount":{}}"#),
+            (.spendBudget, #"{"spendBudget":{}}"#),
+        ]
+        for (token, json) in fixtures {
+            #expect(try String(bytes: JSONEncoder().encode(token), encoding: .utf8) == json)
+            #expect(try JSONDecoder().decode(MenuBarLayoutToken.self, from: Data(json.utf8)) == token)
+        }
+    }
+
     private func saveV4(
         layout: MenuBarLayout,
         overrides: [String: MenuBarLayout],

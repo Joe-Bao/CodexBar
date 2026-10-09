@@ -1450,6 +1450,9 @@
 "menu_bar_layout_token_runs_out" = "使い切り";
 "menu_bar_layout_token_cost_today" = "今日のコスト";
 "menu_bar_layout_token_cost_window" = "コスト（履歴期間）";
+"menu_bar_layout_token_spend" = "支出 %";
+"menu_bar_layout_token_spend_pace" = "支出ペース";
+"menu_bar_layout_token_spend_budget" = "支出 / 予算";
 "menu_bar_layout_token_space" = "空白";
 "menu_bar_layout_token_line_break" = "改行";
 "menu_bar_layout_token_separator_accessibility" = "区切り点";

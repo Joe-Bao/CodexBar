@@ -41,6 +41,7 @@ struct MenuBarLayoutRenderMetrics: Hashable {
     let balanceUsedUSD: Double?
     let costTodayUSD: Double?
     let cost30dUSD: Double?
+    var spendPaceDelta: Double?
 
     static let unavailable = MenuBarLayoutRenderMetrics(
         sessionPaceDelta: nil,
@@ -90,6 +91,12 @@ struct MenuBarLayoutRenderData: Hashable {
     let cost30d: String?
     /// Numeric twins of the display strings above, for conditional predicates.
     let metrics: MenuBarLayoutRenderMetrics
+    /// Money is nil for credit-denominated caps, whose percent renders without a currency prefix.
+    var spend: MenuBarLayoutRenderWindow?
+    var spendPace: String?
+    var spendAmount: String?
+    var spendBudget: String?
+    var spendCurrencySymbol = "$"
 
     func extraTitle(_ id: String) -> String? {
         ProviderDescriptorRegistry.descriptor(for: self.provider).menuBarMetrics.namedExtras[id].map { title in
@@ -283,6 +290,7 @@ final class MenuBarLayoutTitleCache {
 }
 
 @MainActor
+// swiftlint:disable:next type_body_length
 final class MenuBarLayoutRenderer {
     private static let missingValue = "–"
     private static let stackedBaselineOffset: CGFloat = -3 // Center multi-line NSStatusBarButton titles.
@@ -769,8 +777,9 @@ final class MenuBarLayoutRenderer {
                 self.missingValue,
                 accessibilityText: L("menu_bar_layout_conditional_unavailable"),
                 attributes: style.attributes)
-        case .providerName, .accountLabel, .lanePercent, .extraPercent, .tokensPerMinute, .tokensSparkline:
-            preconditionFailure("Provider text and throughput tokens should render before the main switch")
+        case .providerName, .accountLabel, .lanePercent, .extraPercent, .tokensPerMinute, .tokensSparkline,
+             .spendAmount, .spendBudget:
+            preconditionFailure("Provider text, throughput, and spend tokens should render before the main switch")
         case .usageBar, .progressBar:
             preconditionFailure("Usage meter tokens should render before the main switch")
         }
@@ -852,6 +861,8 @@ final class MenuBarLayoutRenderer {
             prefix = data.scopedWeeklyTitle.map { String($0.prefix(1)).uppercased() } ?? "F"
         case .automatic:
             prefix = ""
+        case .spend:
+            prefix = data.spendCurrencySymbol
         }
         return prefix
     }
@@ -866,6 +877,7 @@ final class MenuBarLayoutRenderer {
         case .weekly: self.secondaryLabel(data: data) ?? L("Weekly")
         case .scopedWeekly: data.scopedWeeklyTitle ?? L("Scoped weekly")
         case .automatic: L("Usage")
+        case .spend: L("Spend")
         }
     }
 
@@ -899,6 +911,8 @@ final class MenuBarLayoutRenderer {
                 attributes: attributes)
         case let .extraPercent(id):
             self.extraPercentToken(id, data: data, showUsed: showUsed, attributes: attributes)
+        case .spendAmount, .spendBudget:
+            self.spendMoneyToken(item, data: data, attributes: attributes)
         default:
             nil
         }
@@ -1113,6 +1127,7 @@ final class MenuBarLayoutRenderer {
         case .weekly: data.weekly
         case .scopedWeekly: data.scopedWeekly
         case .automatic: data.automatic
+        case .spend: data.spend
         }
     }
 
@@ -1138,6 +1153,7 @@ final class MenuBarLayoutRenderer {
         case .weekly: data.weeklyPace
         case .scopedWeekly: nil
         case .automatic: data.automaticPace
+        case .spend: data.spendPace
         }
     }
 
@@ -1149,6 +1165,7 @@ final class MenuBarLayoutRenderer {
         case .session: data.metrics.sessionPaceDelta
         case .weekly: data.metrics.weeklyPaceDelta
         case .automatic: data.metrics.automaticPaceDelta
+        case .spend: data.metrics.spendPaceDelta
         case .scopedWeekly: nil
         }
     }
@@ -1206,6 +1223,19 @@ extension MenuBarLayoutRenderer {
         default:
             nil
         }
+    }
+
+    private static func spendMoneyToken(
+        _ item: MenuBarLayoutToken,
+        data: MenuBarLayoutRenderData,
+        attributes: [NSAttributedString.Key: Any])
+        -> (value: NSAttributedString, accessibilityText: String?)
+    {
+        self.optionalTextToken(
+            item == .spendBudget ? data.spendBudget : data.spendAmount,
+            unavailableLabel: L("%@ unavailable", item.editorLabel(provider: data.provider)),
+            accessibilityPrefix: L("Spend"),
+            attributes: attributes)
     }
 
     private static func sparklineToken(

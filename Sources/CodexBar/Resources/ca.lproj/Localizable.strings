@@ -1456,6 +1456,9 @@
 "menu_bar_layout_token_runs_out" = "S'esgota";
 "menu_bar_layout_token_cost_today" = "Cost d'avui";
 "menu_bar_layout_token_cost_window" = "Cost (Finestra d'historial)";
+"menu_bar_layout_token_spend" = "Despesa %";
+"menu_bar_layout_token_spend_pace" = "Ritme de despesa";
+"menu_bar_layout_token_spend_budget" = "Despesa / pressupost";
 "menu_bar_layout_token_space" = "Espai";
 "menu_bar_layout_token_line_break" = "Salt de línia";
 "menu_bar_layout_token_separator_accessibility" = "Punt separador";

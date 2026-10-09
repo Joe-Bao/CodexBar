@@ -1453,6 +1453,9 @@
 "menu_bar_layout_token_runs_out" = "Habis";
 "menu_bar_layout_token_cost_today" = "Biaya hari ini";
 "menu_bar_layout_token_cost_window" = "Biaya (Jendela riwayat)";
+"menu_bar_layout_token_spend" = "Pengeluaran %";
+"menu_bar_layout_token_spend_pace" = "Laju pengeluaran";
+"menu_bar_layout_token_spend_budget" = "Pengeluaran / anggaran";
 "menu_bar_layout_token_space" = "Spasi";
 "menu_bar_layout_token_line_break" = "Pemisah baris";
 "menu_bar_layout_token_separator_accessibility" = "Titik pemisah";

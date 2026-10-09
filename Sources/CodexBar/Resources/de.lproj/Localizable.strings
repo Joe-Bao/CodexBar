@@ -1452,6 +1452,9 @@
 "menu_bar_layout_token_runs_out" = "Reicht bis";
 "menu_bar_layout_token_cost_today" = "Kosten heute";
 "menu_bar_layout_token_cost_window" = "Kosten (Verlaufsfenster)";
+"menu_bar_layout_token_spend" = "Ausgaben %";
+"menu_bar_layout_token_spend_pace" = "Ausgabentempo";
+"menu_bar_layout_token_spend_budget" = "Ausgaben / Budget";
 "menu_bar_layout_token_space" = "Leerraum";
 "menu_bar_layout_token_line_break" = "Zeilenumbruch";
 "menu_bar_layout_token_separator_accessibility" = "Trennpunkt";

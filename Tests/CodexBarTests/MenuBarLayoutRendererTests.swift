@@ -1096,6 +1096,8 @@ struct MenuBarLayoutRendererTests {
         case .scopedWeekly:
             #expect(text.hasPrefix("F "))
             #expect(output.accessibilityLabel.contains("80%"))
+        case .spend:
+            Issue.record("Spend has no progress bar palette token")
         }
     }
 
@@ -1868,6 +1870,7 @@ struct MenuBarLayoutRendererTests {
         let renderer = MenuBarLayoutRenderer()
         let cases: [(PercentWindow, NSColor)] = [
             (.session, .systemGreen), (.weekly, .systemRed), (.automatic, .controlTextColor),
+            (.spend, .systemRed),
         ]
         for (window, expectedColor) in cases {
             let layout = MenuBarLayout(lines: [[.pace(window: window)]])
@@ -2003,6 +2006,112 @@ struct MenuBarLayoutRendererTests {
         }
     }
 
+    private func renderToken(
+        _ token: MenuBarLayoutToken,
+        data: MenuBarLayoutRenderData? = nil,
+        showUsed: Bool = true)
+        -> MenuBarLayoutRenderedTitle
+    {
+        MenuBarLayoutRenderer().render(
+            layout: MenuBarLayout(lines: [[token]]),
+            data: data ?? self.data(),
+            icon: nil,
+            options: self.options(showUsed: showUsed))
+    }
+
+    @Test
+    func `spend percent renders with the budget currency prefix and follows the used direction`() {
+        let spend = L("Spend")
+        let usd = self.renderToken(.percent(window: .spend))
+        #expect(usd.attributedTitle.string == "$ 46%")
+        #expect(usd.accessibilityLabel == L("%@ %@", spend, "46%"))
+        #expect(self.renderToken(.percent(window: .spend), showUsed: false).attributedTitle.string == "$ 54%")
+
+        var data = self.data()
+        data.spendCurrencySymbol = "£"
+        #expect(self.renderToken(.percent(window: .spend), data: data).attributedTitle.string == "£ 46%")
+        data.spendCurrencySymbol = ""
+        #expect(self.renderToken(.percent(window: .spend), data: data).attributedTitle.string == "46%")
+    }
+
+    @Test
+    func `spend tokens render a dash without a budget`() {
+        var data = self.data()
+        data.spend = nil
+        data.spendPace = nil
+        data.spendAmount = nil
+        data.spendBudget = nil
+        let expected: [(MenuBarLayoutToken, String)] = [
+            (.percent(window: .spend), "$ –"),
+            (.pace(window: .spend), "–"),
+            (.windowResetCountdown(window: .spend), "–"),
+            (.windowResetAbsolute(window: .spend), "–"),
+            (.spendAmount, "–"),
+            (.spendBudget, "–"),
+        ]
+        for (token, text) in expected {
+            #expect(self.renderToken(token, data: data).attributedTitle.string == text)
+        }
+        #expect(self.renderToken(.percent(window: .spend), data: data).accessibilityLabel
+            == L("%@ unavailable", L("Spend")))
+    }
+
+    @Test
+    func `spend pace renders its own delta and never borrows weekly pace`() {
+        #expect(self.renderToken(.pace(window: .spend)).attributedTitle.string == "+6%")
+
+        var data = self.data()
+        data.spendPace = nil
+        // Weekly pace is still resolved, yet the Spend token must not fall back to it.
+        #expect(data.weeklyPace == "+11%")
+        #expect(self.renderToken(.pace(window: .spend), data: data).attributedTitle.string == "–")
+
+        // The pace color reads the Spend delta as well: a reserve is green while weekly pace is a deficit.
+        var reserve = MenuBarLayoutRenderMetrics.unavailable
+        reserve.spendPaceDelta = -6
+        let colored = MenuBarLayoutRenderer().render(
+            layout: MenuBarLayout(lines: [[.pace(window: .spend)]]),
+            data: self.data(metrics: reserve),
+            icon: nil,
+            options: self.options(colorPace: true))
+        #expect(colored.attributedTitle.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor
+            == .systemGreen)
+    }
+
+    @Test
+    func `spend reset tokens read the spend window`() {
+        let reset = self.now.addingTimeInterval(12 * 24 * 60 * 60)
+        let countdown = self.renderToken(.windowResetCountdown(window: .spend)).attributedTitle.string
+        let absolute = self.renderToken(.windowResetAbsolute(window: .spend)).attributedTitle.string
+        #expect(countdown == UsageFormatter.resetCountdownDescription(from: reset, now: self.now))
+        #expect(absolute == UsageFormatter.resetDescription(from: reset, now: self.now))
+        #expect(countdown != self.renderToken(.windowResetCountdown(window: .weekly)).attributedTitle.string)
+    }
+
+    @Test
+    func `spend amount and budget render provider reported money`() {
+        for (token, text) in [(MenuBarLayoutToken.spendAmount, "$460"), (.spendBudget, "$460 / $1,000")] {
+            let rendered = self.renderToken(token)
+            #expect(rendered.attributedTitle.string == text)
+            #expect(rendered.accessibilityLabel == "\(L("Spend")) \(text)")
+        }
+    }
+
+    @Test
+    func `spend money tokens never substitute balance or local cost`() {
+        var data = self.data()
+        data.spendAmount = nil
+        data.spendBudget = nil
+        #expect(data.balance == "$12.34")
+        #expect(data.costToday == "$1.25")
+        #expect(data.cost30d == "$20.00")
+        for token in [MenuBarLayoutToken.spendAmount, .spendBudget] {
+            let rendered = self.renderToken(token, data: data)
+            #expect(rendered.attributedTitle.string == "–")
+            #expect(rendered.accessibilityLabel == L("%@ unavailable", token.editorLabel(provider: data.provider)))
+        }
+    }
+
     private static var missingData: MenuBarLayoutRenderData {
         MenuBarLayoutRenderData(
             provider: .codex,
@@ -2104,7 +2213,16 @@ struct MenuBarLayoutRendererTests {
                 balanceRemainingUSD: 12.34,
                 balanceUsedUSD: 7.66,
                 costTodayUSD: 1.25,
-                cost30dUSD: 20))
+                cost30dUSD: 20,
+                spendPaceDelta: 6),
+            spend: MenuBarLayoutRenderWindow(RateWindow(
+                usedPercent: 46,
+                windowMinutes: 30 * 24 * 60,
+                resetsAt: self.now.addingTimeInterval(12 * 24 * 60 * 60),
+                resetDescription: nil)),
+            spendPace: "+6%",
+            spendAmount: "$460",
+            spendBudget: "$460 / $1,000")
     }
 
     func options(

@@ -1453,6 +1453,9 @@
 "menu_bar_layout_token_runs_out" = "Termina";
 "menu_bar_layout_token_cost_today" = "Costo oggi";
 "menu_bar_layout_token_cost_window" = "Costo (Finestra storica)";
+"menu_bar_layout_token_spend" = "Spesa %";
+"menu_bar_layout_token_spend_pace" = "Ritmo spesa";
+"menu_bar_layout_token_spend_budget" = "Spesa / bilancio";
 "menu_bar_layout_token_space" = "Spazio";
 "menu_bar_layout_token_line_break" = "Interruzione di riga";
 "menu_bar_layout_token_separator_accessibility" = "Punto separatore";
