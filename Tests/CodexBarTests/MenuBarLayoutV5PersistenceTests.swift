@@ -4,6 +4,17 @@ import Testing
 
 @MainActor
 struct MenuBarLayoutV5PersistenceTests {
+    private static let spendLayout = MenuBarLayout(lines: [[
+        .icon,
+        .percent(window: .spend),
+        .pace(window: .spend),
+        .windowResetCountdown(window: .spend),
+        .spendAmount,
+        .spendBudget,
+        .extraPercent(id: "cursor-grok-bot"),
+        .windowResetCountdown(window: .weekly),
+    ]])
+
     @Test
     func `V4 downgrade and reupgrade preserve bars while older edits win`() throws {
         let defaults = InMemoryUserDefaults()
@@ -101,6 +112,133 @@ struct MenuBarLayoutV5PersistenceTests {
         }
     }
 
+    @Test
+    func `V4 projection drops spend tokens but keeps named extras and reset windows`() throws {
+        let decoder = JSONDecoder()
+        let overrides = [
+            "claude": Self.spendLayout,
+            "cursor": MenuBarLayout(lines: [[.spendBudget, .windowResetAbsolute(window: .session)]]),
+        ]
+        let layoutBlobs = try MenuBarLayoutPersistence.encoded(Self.spendLayout)
+        let overrideBlobs = try MenuBarLayoutPersistence.encodedOverrides(overrides)
+
+        let kept = V4Layout(lines: [[
+            .icon,
+            .extraPercent(id: "cursor-grok-bot"),
+            .windowResetCountdown(window: .weekly),
+        ]])
+        #expect(try decoder.decode(V4Layout.self, from: layoutBlobs.v4) == kept)
+        let projected = try decoder.decode([String: V4Layout].self, from: overrideBlobs.v4)
+        #expect(projected["claude"] == kept)
+        #expect(projected["cursor"] == V4Layout(lines: [[.windowResetAbsolute(window: .session)]]))
+        // V3 also loses the named extra, and the oldest generation loses every reset window.
+        #expect(try decoder.decode(MenuBarLayout.self, from: layoutBlobs.v3)
+            == MenuBarLayout(lines: [[.icon, .windowResetCountdown(window: .weekly)]]))
+        #expect(try decoder.decode(MenuBarLayout.self, from: layoutBlobs.released) == MenuBarLayout(lines: [[.icon]]))
+        // The frozen decoder is strict: the current blob, with Spend tokens, would lose the whole layout.
+        #expect(throws: DecodingError.self) {
+            try decoder.decode(V4Layout.self, from: layoutBlobs.current)
+        }
+    }
+
+    @Test
+    func `a spend only layout projects to the default layout and returns intact`() throws {
+        let spendOnly = MenuBarLayout(lines: [[.percent(window: .spend), .spendBudget]])
+        let decoder = JSONDecoder()
+        let blobs = try MenuBarLayoutPersistence.encoded(spendOnly)
+
+        for blob in [blobs.v4, blobs.v3, blobs.released, blobs.legacy] {
+            #expect(try decoder.decode(MenuBarLayout.self, from: blob) == .defaultLayout)
+        }
+        #expect(try MenuBarLayoutPersistence.preferredLayout(
+            current: decoder.decode(MenuBarLayout.self, from: blobs.current),
+            v4: decoder.decode(MenuBarLayout.self, from: blobs.v4),
+            v3: decoder.decode(MenuBarLayout.self, from: blobs.v3),
+            released: decoder.decode(MenuBarLayout.self, from: blobs.released),
+            legacy: decoder.decode(MenuBarLayout.self, from: blobs.legacy)) == spendOnly)
+    }
+
+    @Test
+    func `conditionals reading spend metrics are omitted from older libraries`() throws {
+        let readable = Self.rule(metric: .session, thenToken: .resetCountdown)
+        let spendRules = [
+            Self.rule(metric: .spend, thenToken: .providerName),
+            Self.rule(metric: .spendResetsIn, thenToken: .providerName),
+            Self.rule(metric: .spendPace, thenToken: .providerName),
+            Self.rule(metric: .spendAmount, thenToken: .providerName),
+            Self.rule(metric: .session, thenToken: .percent(window: .spend)),
+            Self.rule(metric: .session, thenToken: .providerName, elseToken: .spendBudget),
+        ]
+        for rule in spendRules {
+            #expect(!rule.hasV4Representation)
+            #expect(rule.v3Compatible == nil)
+            #expect(rule.releasedCompatible == nil)
+            #expect(rule.legacyCompatible == nil)
+        }
+
+        let blobs = try MenuBarLayoutPersistence.encodedLibrary([readable] + spendRules)
+        let decoder = JSONDecoder()
+        #expect(try decoder.decode([MenuBarLayoutConditional].self, from: blobs.current).count == spendRules.count + 1)
+        for blob in [blobs.v4, blobs.v3, blobs.released, blobs.legacy] {
+            #expect(try decoder.decode([V4Rule].self, from: blob).map(\.id) == [readable.id])
+        }
+    }
+
+    @Test
+    func `a spend layout survives a settings reload while V4 keeps only what 0.73.0 reads`() throws {
+        let defaults = InMemoryUserDefaults()
+        let settings = testSettingsStore(suiteName: "spend-reload", userDefaults: defaults)
+        let readable = Self.rule(metric: .session, thenToken: .resetCountdown)
+        let spendRule = Self.rule(metric: .spend, thenToken: .percent(window: .spend))
+        let laterReadable = Self.rule(metric: .weekly, thenToken: .resetCountdown)
+        settings.menuBarLayoutConditionals = [readable, spendRule, laterReadable]
+        settings.setMenuBarLayout(Self.spendLayout, for: nil)
+        settings.setMenuBarLayout(Self.spendLayout, for: .claude)
+
+        let returned = testSettingsStore(suiteName: "spend-reload-return", userDefaults: defaults)
+        #expect(returned.menuBarLayout == Self.spendLayout)
+        #expect(returned.menuBarLayoutOverrides[.claude] == Self.spendLayout)
+        #expect(returned.menuBarLayoutConditionals == [readable, spendRule, laterReadable])
+
+        let v4Rules = try JSONDecoder().decode(
+            [V4Rule].self,
+            from: #require(defaults.data(forKey: "menuBarLayoutConditionalsV4")))
+        #expect(v4Rules.map(\.id) == [readable.id, laterReadable.id])
+    }
+
+    @Test
+    func `a V4 library edit wins on return while spend rules survive it`() {
+        let readable = Self.rule(metric: .session, thenToken: .windowResetCountdown(window: .weekly))
+        let spendRule = Self.rule(metric: .spend, thenToken: .percent(window: .spend))
+        let edited = MenuBarLayoutConditional(
+            id: readable.id,
+            name: "Edited in 0.73.0",
+            clauses: readable.clauses,
+            thenToken: .windowResetAbsolute(window: .session),
+            elseToken: .hidden)
+
+        #expect(MenuBarLayoutPersistence.preferredLibrary(
+            current: [readable, spendRule],
+            v4: [edited],
+            v3: [edited],
+            released: [],
+            legacy: []) == [edited, spendRule])
+        // Clearing the library in 0.73.0 deliberately clears the Spend rules too.
+        #expect(MenuBarLayoutPersistence.preferredLibrary(
+            current: [readable, spendRule],
+            v4: [],
+            v3: [],
+            released: [],
+            legacy: []) == [])
+        // A V4-only install upgrading to V5 has no current library yet.
+        #expect(MenuBarLayoutPersistence.preferredLibrary(
+            current: nil,
+            v4: [readable],
+            v3: [readable],
+            released: [],
+            legacy: []) == [readable])
+    }
+
     private func saveV4(
         layout: MenuBarLayout,
         overrides: [String: MenuBarLayout],
@@ -121,13 +259,40 @@ struct MenuBarLayoutV5PersistenceTests {
             defaults.set(blobs.legacy, forKey: prefix)
         }
     }
+
+    private static func rule(
+        metric: MenuBarConditionalMetric,
+        thenToken: MenuBarLayoutToken,
+        elseToken: MenuBarLayoutToken = .hidden)
+        -> MenuBarLayoutConditional
+    {
+        MenuBarLayoutConditional(
+            clauses: [MenuBarConditionalClause(
+                combinator: nil,
+                predicate: MenuBarConditionalPredicate(metric: metric, comparison: .greaterThan, threshold: 50))],
+            thenToken: thenToken,
+            elseToken: elseToken)
+    }
+}
+
+/// Frozen 0.73.0 decoder surface: its windows and conditional metrics have no Spend cases, and a synthesized
+/// `Codable` enum throws on an unknown case.
+private enum V4Window: String, Codable {
+    case session
+    case weekly
+    case scopedWeekly
+    case automatic
 }
 
 private enum V4Token: Codable, Equatable {
     case icon
-    case percent(window: PercentWindow)
+    case providerName
+    case percent(window: V4Window)
     case usageBar
     case extraPercent(id: String)
+    case resetCountdown
+    case windowResetCountdown(window: V4Window)
+    case windowResetAbsolute(window: V4Window)
     case hidden
 }
 
@@ -135,7 +300,23 @@ private struct V4Layout: Decodable, Equatable {
     let lines: [[V4Token]]
 }
 
+private enum V4Metric: String, Decodable {
+    case session, weekly, scopedWeekly, automatic, primaryLane, secondaryLane, tertiaryLane
+    case sessionResetsIn, weeklyResetsIn, scopedWeeklyResetsIn, automaticResetsIn
+    case sessionPace, weeklyPace, automaticPace, runsOutIn, balance, costToday, cost30d
+}
+
 private struct V4Rule: Decodable {
+    struct Clause: Decodable {
+        struct Predicate: Decodable {
+            let metric: V4Metric
+        }
+
+        let predicate: Predicate
+    }
+
+    let id: UUID
+    let clauses: [Clause]
     let thenToken: V4Token
     let elseToken: V4Token
 }

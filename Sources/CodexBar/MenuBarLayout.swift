@@ -128,6 +128,14 @@ enum MenuBarConditionalMetric: String, CaseIterable, Codable, Hashable, Sendable
         }
     }
 
+    /// The V4 schema (0.73.0) predates the Spend metrics, so older library projections omit rules that read them.
+    var hasV4Representation: Bool {
+        switch self {
+        case .spend, .spendResetsIn, .spendPace, .spendAmount: false
+        default: true
+        }
+    }
+
     /// Whether a 0.54.0-era decoder has a case for this metric at all. That release shipped the
     /// conditional editor with only the four percent windows, and its synthesized `Codable` throws on
     /// any other raw value — which would take the whole persisted library down with it. The legacy
@@ -414,16 +422,24 @@ struct MenuBarLayoutConditional: Codable, Hashable, Sendable {
         return readable && readableBranches ? self.v4Compatible : nil
     }
 
-    /// v0.56.8 understands every predicate, but not explicit reset windows or named extras.
+    /// v0.56.8 understands every predicate that predates Spend, but not explicit reset windows or named extras.
     var releasedCompatible: MenuBarLayoutConditional? {
-        self.v4Compatible.thenToken.hasReleasedRepresentation
+        self.hasV4Representation
+            && self.v4Compatible.thenToken.hasReleasedRepresentation
             && self.v4Compatible.elseToken.hasReleasedRepresentation ? self.v4Compatible : nil
     }
 
     /// The V3 schema predates named extra percentages but understands explicit reset windows.
     var v3Compatible: MenuBarLayoutConditional? {
-        self.v4Compatible.thenToken.hasV3Representation
+        self.hasV4Representation
+            && self.v4Compatible.thenToken.hasV3Representation
             && self.v4Compatible.elseToken.hasV3Representation ? self.v4Compatible : nil
+    }
+
+    var hasV4Representation: Bool {
+        self.clauses.allSatisfy(\.predicate.metric.hasV4Representation)
+            && self.thenToken.v4Compatible.hasV4Representation
+            && self.elseToken.v4Compatible.hasV4Representation
     }
 
     private static func clause(
@@ -570,7 +586,9 @@ enum MenuBarLayoutToken: Codable, Hashable, Sendable {
     /// V4 layouts drop tokens that postdate it instead of leaving hidden placeholders in a line.
     var hasV4Representation: Bool {
         switch self {
-        case .tokensPerMinute, .tokensSparkline: false
+        case .tokensPerMinute, .tokensSparkline, .spendAmount, .spendBudget: false
+        case let .percent(window), let .pace(window), let .progressBar(window),
+             let .windowResetCountdown(window), let .windowResetAbsolute(window): window != .spend
         default: true
         }
     }
@@ -1200,6 +1218,12 @@ enum MenuBarLayoutPersistence {
         conditionals.compactMap(\.releasedCompatible)
     }
 
+    static func v4CompatibleLibrary(
+        _ conditionals: [MenuBarLayoutConditional]) -> [MenuBarLayoutConditional]
+    {
+        conditionals.filter(\.hasV4Representation).map(\.v4Compatible)
+    }
+
     static func v3CompatibleLibrary(
         _ conditionals: [MenuBarLayoutConditional]) -> [MenuBarLayoutConditional]
     {
@@ -1227,9 +1251,13 @@ enum MenuBarLayoutPersistence {
     {
         if let v4 {
             let older = self.preferredLibrary(current: v4, v3: v3, released: released, legacy: legacy)
-            return older?.map { rule in
-                current?.first { $0.id == rule.id && $0.v4Compatible == rule } ?? rule
-            }
+            guard let current, let older else { return older }
+            if self.v4CompatibleLibrary(current) == older { return current }
+            guard !older.isEmpty else { return older }
+            let olderIDs = Set(older.map(\.id))
+            let edited = older.map { rule in current.first { $0.id == rule.id && $0.v4Compatible == rule } ?? rule }
+            let invisible = current.filter { !$0.hasV4Representation && !olderIDs.contains($0.id) }
+            return edited + invisible
         }
         if let v3 {
             let older = self.preferredLibrary(current: v3, released: released, legacy: legacy)
@@ -1280,7 +1308,7 @@ enum MenuBarLayoutPersistence {
         let released = self.releasedCompatibleLibrary(conditionals)
         return try EncodedGenerations(
             current: encoder.encode(conditionals),
-            v4: encoder.encode(conditionals.map(\.v4Compatible)),
+            v4: encoder.encode(self.v4CompatibleLibrary(conditionals)),
             v3: encoder.encode(v3),
             released: encoder.encode(released),
             legacy: encoder.encode(self.legacyCompatibleLibrary(released)))
