@@ -44,6 +44,22 @@ struct MenuBarSpendCountdownRefreshTests {
         #expect(absolute == countdown)
     }
 
+    @Test
+    func `spend pace token schedules its elapsed eligibility refresh`() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(secondsFromGMT: 0))
+        let month = try #require(calendar.dateInterval(of: .month, for: Date()))
+        let settings = Self.makeSettings(suite: "MenuBarSpendCountdownRefreshTests-pace-boundary")
+        settings.menuBarLayout = MenuBarLayout(lines: [[.icon, .pace(window: .spend)]])
+        let controller = Self.makeController(settings: settings, resetsAt: month.end)
+        defer { controller.releaseStatusItemsForTesting() }
+
+        // An hour into the month is short of the 1% floor (about seven hours), so pace waits on that boundary.
+        controller.scheduleMenuBarCountdownRefreshIfNeeded(now: month.start.addingTimeInterval(60 * 60))
+
+        #expect(controller._test_isMenuBarCountdownRefreshScheduled())
+    }
+
     private static func makeSettings(suite: String) -> SettingsStore {
         let settings = testSettingsStore(suiteName: suite)
         settings.statusChecksEnabled = false
@@ -52,8 +68,8 @@ struct MenuBarSpendCountdownRefreshTests {
         return settings
     }
 
-    /// Claude with a monthly spend budget that resets in three hours.
-    private static func makeController(settings: SettingsStore) -> StatusItemController {
+    /// Claude with a monthly spend budget that resets in three hours unless `resetsAt` says otherwise.
+    private static func makeController(settings: SettingsStore, resetsAt: Date? = nil) -> StatusItemController {
         if let metadata = ProviderRegistry.shared.metadata[.claude] {
             settings.setProviderEnabled(provider: .claude, metadata: metadata, enabled: true)
         }
@@ -76,7 +92,7 @@ struct MenuBarSpendCountdownRefreshTests {
             limit: 1000,
             currencyCode: "USD",
             period: "Monthly",
-            resetsAt: now.addingTimeInterval(3 * 60 * 60),
+            resetsAt: resetsAt ?? now.addingTimeInterval(3 * 60 * 60),
             updatedAt: now)
         store._setSnapshotForTesting(
             UsageSnapshot(primary: nil, secondary: nil, providerCost: budget, updatedAt: now),
