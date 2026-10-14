@@ -4,7 +4,7 @@
 
 ### Added
 
-- Menu bar: add Spend layout items and conditional rules for providers that report a spend budget, such as Claude Enterprise (#TBD). Thanks @benjschiller!
+- Menu bar: add Spend layout items and conditional rules for providers that report a spend budget, such as Claude Enterprise (#4530). Thanks @benjschiller!
 
 ### Fixed
 
