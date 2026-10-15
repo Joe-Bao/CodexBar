@@ -86,6 +86,21 @@ struct MenuBarLayoutV6PersistenceTests {
     }
 
     @Test
+    func `a row left with only spacing after dropped tokens falls back like an empty row`() {
+        #expect(MenuBarLayout(lines: [[.percent(window: .spend), .space]]).v5Compatible() == .defaultLayout)
+        #expect(MenuBarLayout(lines: [[.spendBudget, .separatorDot]]).v5Compatible() == .defaultLayout)
+        #expect(MenuBarLayout(lines: [[.icon, .percent(window: .session)], [.spendBudget, .separatorDot]])
+            .v5Compatible() == MenuBarLayout(lines: [[.icon, .percent(window: .session)]]))
+        // The older generations share the projection, so their dropped tokens get the same fallback.
+        #expect(MenuBarLayout(lines: [[.tokensPerMinute, .space]]).v4Compatible() == .defaultLayout)
+        #expect(MenuBarLayout(lines: [[.extraPercent(id: "cursor-grok-bot"), .separatorDot]]).v3Compatible()
+            == .defaultLayout)
+        // A row that was only spacing to begin with is the user's choice and stays.
+        let spacer = MenuBarLayout(lines: [[.icon], [.separatorDot]])
+        #expect(spacer.v5Compatible() == spacer)
+    }
+
+    @Test
     func `conditionals reading spend metrics are omitted from V5 and older libraries`() throws {
         let readable = Self.rule(metric: .session, thenToken: .resetCountdown)
         let spendRules = [

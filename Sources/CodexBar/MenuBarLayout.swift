@@ -856,8 +856,11 @@ struct MenuBarLayout: Codable, Hashable, Sendable {
     }
 
     private func projected(_ transform: (MenuBarLayoutToken) -> MenuBarLayoutToken?) -> MenuBarLayout {
+        let spacing: Set<MenuBarLayoutToken> = [.separatorDot, .space]
         let projected = self.lines.map { line in
-            line.compactMap(transform)
+            let kept = line.compactMap(transform)
+            // A row reduced to spacing by dropped tokens would render blank or a lone dot in the older release.
+            return kept.count < line.count && kept.allSatisfy(spacing.contains) ? [] : kept
         }
         // Keep a trailing empty line only when the layout was already stacked with an empty line,
         // so an older release does not inherit a blank stacked row created purely by filtering.
