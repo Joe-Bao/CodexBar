@@ -85,7 +85,10 @@ read_when:
   currently matches the default. Each “Use all-providers layout” action removes only that provider's override;
   global edits preserve overrides, and disabled providers are left untouched. Before a default is first saved,
   editing still starts from the representative provider's effective layout.
-- Small/Regular controls the token font scale. Tight/Regular controls status-item padding. Compact stacked uses two
+- Small/Regular/Large controls the token font scale; Regular remains the default. Large uses 14-point single-line
+  text and 10-point stacked text. Monospaced digits is independently optional and defaults off; labels remain
+  proportional. These display preferences persist separately from layout tokens, preserving older-build decoding
+  of saved layouts and their V4 projections. Tight/Regular controls status-item padding. Compact stacked uses two
   tightly spaced lines sized to fit the menu bar.
 - Size, gap, and vertical adjustment share a compact options row. The Layout section footer keeps the token-editing
   instructions, including selecting a placed token and pressing Delete to remove it.
@@ -102,12 +105,23 @@ read_when:
 | Money | Balance, Cost today, Cost (History window), Spend, Spend / budget | Provider balance or remaining credits, or local cost estimate. Cost (History window) is the total for the selected [History window](cost-reporting-periods.md), and cost thresholds compare that window's total. Spend and Spend / budget show the provider-reported amount spent, alone or against its budget |
 | Structure | Separator dot, Space, Line break | Spacing and optional two-line composition |
 
+Spend items use the provider-reported budget behind the Extra usage metric and honor **Show optional credits,
+spending & billing details**. They do not use prepaid balances or local cost estimates. Spend % carries the budget's
+currency symbol; credit-denominated caps have no currency prefix and no monetary amount. Spend pace requires a
+reported period and becomes available after 1% of that period. Existing layouts are unchanged; new installs also
+include a **Spend over 90% used** conditional rule.
+
+Spend layouts, overrides, and rules are stored in V6. Older builds read a V5 projection without Spend tokens or rules;
+V4 and earlier projections retain their existing compatibility behavior. Returning restores the full layout when the
+older copy was unchanged. Edits in an older build take precedence, while untouched overrides and Spend rules survive;
+clearing the older rule library deliberately clears all rules.
+
 The pace tokens render the same delta the menu card shows as "in deficit"/"in reserve", in the compact signed form the
 pre-0.45 **Both** display mode used: `+11%` means usage runs that far ahead of the sustainable rate, `-8%` that far
 behind it, `0%` on pace. Each pace token reads its own window, so `Weekly pace` never borrows the session delta — unlike
 `Runs out`, which always estimates from the weekly (or automatic) lane. A pace token renders an en dash while pace is
-unavailable, including the first 3% of a window. The weekly menu-bar pace token may appear after 1% of its weekly
-window has elapsed; session, automatic, and Runs out tokens keep the 3% threshold. See [Pace tracking](#pace-tracking).
+unavailable. Weekly and Spend pace may appear after 1% of their respective periods has elapsed; session, automatic,
+and Runs out tokens keep the 3% threshold. See [Pace tracking](#pace-tracking).
 
 Choose **Pace sign** under **Menu Bar → Icon**, next to **Color Pace Indicator**:
 **Ahead of pace is +** (the default) shows deficits as positive and reserves as negative;
