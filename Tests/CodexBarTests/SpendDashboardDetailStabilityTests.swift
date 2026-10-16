@@ -11,7 +11,7 @@ struct SpendDashboardDetailStabilityTests {
             hasProjects: false,
             hasSessions: false,
             supportsCodexDetails: true)
-            == [.providers, .projects, .chats, .sessions])
+            == [.providers, .projects, .chats, .sessions, .speed])
     }
 
     @Test
@@ -49,6 +49,7 @@ struct SpendDashboardDetailStabilityTests {
         #expect(actual.projects.count == 2)
         #expect(actual.projects.filter(\.isProjectless).count == 1)
         #expect(actual.sessions.first?.turnPerformance?.sampleCount == 1)
+        #expect(actual.performanceSamples.count == 1)
         var retained = Self.input(cost: 9, detailsComplete: false)
         retained.retainedDetailSnapshot = native.snapshot
         let retainedGroup = try #require(SpendDashboardModel.build(
@@ -57,6 +58,7 @@ struct SpendDashboardDetailStabilityTests {
             hideNativeCodexWhenOpenCodexPresent: true).groups.first)
         #expect(retainedGroup.retainedDetailUpdatedAt == Self.now)
         #expect(retainedGroup.projects.count == 2)
+        #expect(retainedGroup.performanceSamples == actual.performanceSamples)
         #expect(retainedGroup.providers == expected.providers)
         let hidden = SpendDashboardModel.build(
             inputs: [native, replacement],
@@ -64,6 +66,7 @@ struct SpendDashboardDetailStabilityTests {
             hiddenSourceIDs: [native.id],
             hideNativeCodexWhenOpenCodexPresent: true)
         #expect(hidden.groups.first?.projects.isEmpty == true)
+        #expect(hidden.groups.first?.performanceSamples.isEmpty == true)
         let selected = SpendDashboardModel.build(
             inputs: [native, replacement],
             now: Self.now,
@@ -72,6 +75,7 @@ struct SpendDashboardDetailStabilityTests {
         #expect(selected.groups.first?.projects.isEmpty == true)
         #expect(selected.groups.first?.sessions.count == 1)
         #expect(selected.groups.first?.sessions.first?.turnPerformance == nil)
+        #expect(selected.groups.first?.performanceSamples.isEmpty == true)
     }
 
     @Test
@@ -227,8 +231,9 @@ struct SpendDashboardDetailStabilityTests {
     }
 
     @Test
-    func `replacement totals ignore older native detail history`() {
-        let native = Self.input(cost: 8, details: true, day: "2026-07-01")
+    func `replacement totals ignore older native detail history while speed retains it`() throws {
+        let completedAt = Self.now.addingTimeInterval(-14 * 86400)
+        let native = Self.input(cost: 8, details: true, day: "2026-07-01", completedAt: completedAt)
         let replacement = SpendDashboardModel.ProviderInput(
             id: SpendDashboardModel.openCodexSourceID,
             provider: .codex,
@@ -243,6 +248,8 @@ struct SpendDashboardDetailStabilityTests {
             hideNativeCodexWhenOpenCodexPresent: true)
         #expect(actual.requestedDays == expected.requestedDays)
         #expect(actual.groups.first?.chartDomain == expected.groups.first?.chartDomain)
+        let group = try #require(actual.groups.first)
+        #expect(SpendSpeedTrendModel(group: group).trend.latest?.completedAt == completedAt)
     }
 
     private static func refreshed(
@@ -299,7 +306,8 @@ struct SpendDashboardDetailStabilityTests {
         detailsComplete: Bool? = nil,
         coverageEstablished: Bool = true,
         historyDays: Int = 30,
-        day: String = "2026-07-15") -> SpendDashboardModel.ProviderInput
+        day: String = "2026-07-15",
+        completedAt: Date? = nil) -> SpendDashboardModel.ProviderInput
     {
         let entry = CostUsageDailyReport.Entry(
             date: day,
@@ -320,7 +328,7 @@ struct SpendDashboardDetailStabilityTests {
                 isProjectless: chat)
         } : []
         let sample = CostUsageTurnPerformanceSample(
-            completedAt: Self.now,
+            completedAt: completedAt ?? Self.now,
             outputTokens: 40,
             durationMilliseconds: 1000)!
         let sessions: [CostUsageSessionBreakdown] = details ? [.init(

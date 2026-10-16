@@ -2635,3 +2635,12 @@
 "Claude desktop app" = "Claude-skrivbordsappen";
 "Use Claude desktop app cookies" = "Använd cookies från Claude-skrivbordsappen";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "För webbanvändning används kontot som är inloggat i Claude.app i stället för webbläsarkontot.";
+
+// Codex speed trends.
+"spend_speed_tab" = "Hastighet";
+"spend_speed_title" = "Hastighetstrender för Codex";
+"spend_speed_tps" = "TPS per tur";
+"spend_speed_latest" = "Senaste turen";
+"spend_speed_weighted" = "Tidsviktad TPS";
+"spend_speed_all_efforts" = "Alla resonemangsnivåer";
+"spend_speed_empty" = "Slutför en Codex-tur och uppdatera. Äldre loggar kan sakna tidsdata.";

@@ -2637,3 +2637,12 @@
 "Claude desktop app" = "Aplikasi desktop Claude";
 "Use Claude desktop app cookies" = "Gunakan cookie aplikasi desktop Claude";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "Untuk penggunaan web, ikuti akun yang masuk di Claude.app, bukan akun di browser.";
+
+// Codex speed trends.
+"spend_speed_tab" = "Kecepatan";
+"spend_speed_title" = "Tren kecepatan Codex";
+"spend_speed_tps" = "TPS per giliran";
+"spend_speed_latest" = "Giliran terbaru";
+"spend_speed_weighted" = "TPS berbobot waktu";
+"spend_speed_all_efforts" = "Semua tingkat penalaran";
+"spend_speed_empty" = "Selesaikan satu giliran Codex lalu segarkan. Log lama mungkin tidak memuat data waktu.";

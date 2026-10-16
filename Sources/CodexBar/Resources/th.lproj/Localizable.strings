@@ -2638,3 +2638,12 @@
 "Claude desktop app" = "แอป Claude บนเดสก์ท็อป";
 "Use Claude desktop app cookies" = "ใช้คุกกี้จากแอป Claude บนเดสก์ท็อป";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "สำหรับการใช้งานเว็บ ให้ใช้บัญชีที่ลงชื่อเข้าใช้ใน Claude.app แทนบัญชีในเบราว์เซอร์";
+
+// Codex speed trends.
+"spend_speed_tab" = "ความเร็ว";
+"spend_speed_title" = "แนวโน้มความเร็ว Codex";
+"spend_speed_tps" = "TPS ต่อรอบ";
+"spend_speed_latest" = "รอบล่าสุด";
+"spend_speed_weighted" = "TPS ถ่วงน้ำหนักตามเวลา";
+"spend_speed_all_efforts" = "ทุกระดับการให้เหตุผล";
+"spend_speed_empty" = "ทำรอบ Codex ให้เสร็จแล้วรีเฟรช บันทึกเก่าอาจไม่มีข้อมูลเวลา";

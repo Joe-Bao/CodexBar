@@ -2604,3 +2604,12 @@
 "Claude desktop app" = "Claude 데스크톱 앱";
 "Use Claude desktop app cookies" = "Claude 데스크톱 앱 쿠키 사용";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "웹 사용량에는 브라우저 대신 Claude.app에 로그인한 계정을 사용합니다.";
+
+// Codex speed trends.
+"spend_speed_tab" = "속도";
+"spend_speed_title" = "Codex 속도 추이";
+"spend_speed_tps" = "턴 TPS";
+"spend_speed_latest" = "최근 턴";
+"spend_speed_weighted" = "시간 가중 TPS";
+"spend_speed_all_efforts" = "모든 추론 강도";
+"spend_speed_empty" = "Codex 턴을 완료한 후 새로고침하세요. 이전 로그에는 시간 데이터가 없을 수 있습니다.";

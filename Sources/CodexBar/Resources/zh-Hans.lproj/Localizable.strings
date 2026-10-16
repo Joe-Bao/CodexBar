@@ -2628,3 +2628,12 @@
 "Claude desktop app" = "Claude 桌面应用";
 "Use Claude desktop app cookies" = "使用 Claude 桌面应用的 Cookie";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "查询网页使用量时，使用 Claude.app 中登录的账户，而不是浏览器账户。";
+
+// Codex speed trends.
+"spend_speed_tab" = "速度";
+"spend_speed_title" = "Codex 速度趋势";
+"spend_speed_tps" = "整轮 TPS";
+"spend_speed_latest" = "最近一轮";
+"spend_speed_weighted" = "按耗时加权 TPS";
+"spend_speed_all_efforts" = "所有推理强度";
+"spend_speed_empty" = "完成一轮 Codex 对话后刷新。旧日志可能不包含计时数据。";

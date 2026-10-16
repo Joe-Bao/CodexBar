@@ -2634,3 +2634,12 @@
 "Claude desktop app" = "Aplicación de escritorio de Claude";
 "Use Claude desktop app cookies" = "Usar las cookies de la aplicación de escritorio de Claude";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "Para el uso web, usa la cuenta con la sesión iniciada en Claude.app en lugar de la del navegador.";
+
+// Codex speed trends.
+"spend_speed_tab" = "Velocidad";
+"spend_speed_title" = "Tendencias de velocidad de Codex";
+"spend_speed_tps" = "TPS por turno";
+"spend_speed_latest" = "Último turno";
+"spend_speed_weighted" = "TPS ponderados por tiempo";
+"spend_speed_all_efforts" = "Todos los esfuerzos de razonamiento";
+"spend_speed_empty" = "Completa un turno de Codex y actualiza. Los registros antiguos pueden no contener datos de tiempo.";

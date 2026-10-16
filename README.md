@@ -2,6 +2,14 @@
 
 > Every AI coding limit, in your menu bar.
 
+**This fork adds macOS Codex speed trends:** open **Settings → Usage & Spend → Speed**
+for latest-turn TPS, time-weighted TPS, and daily/hourly TPS or first-token latency
+charts, with model and reasoning-effort filters. These are local, completed-turn
+measurements **including tools and waits**, not live model decoding speed.
+See the [metric contract](docs/spend-turn-performance-validation.md#speed-trends-fork-addition).
+Build this branch with `./Scripts/package_app.sh debug`; the upstream releases
+linked below do not include this fork's changes. Local builds use ad-hoc signing.
+
 [![Latest release](https://img.shields.io/github/v/release/steipete/CodexBar?style=flat-square&color=0a0a0c)](https://github.com/steipete/CodexBar/releases/latest)
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-0a0a0c?style=flat-square)](https://github.com/steipete/CodexBar/releases/latest)
 [![Linux desktop](https://img.shields.io/badge/Linux-Qt_6-1793d1?style=flat-square)](Integrations/Linux/README.md)

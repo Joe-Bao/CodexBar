@@ -2636,3 +2636,12 @@
 "Claude desktop app" = "Програма Claude для комп’ютера";
 "Use Claude desktop app cookies" = "Використовувати файли cookie програми Claude";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "Для вебстатистики використовувати обліковий запис у Claude.app замість облікового запису браузера.";
+
+// Codex speed trends.
+"spend_speed_tab" = "Швидкість";
+"spend_speed_title" = "Динаміка швидкості Codex";
+"spend_speed_tps" = "TPS за хід";
+"spend_speed_latest" = "Останній хід";
+"spend_speed_weighted" = "TPS з урахуванням тривалості";
+"spend_speed_all_efforts" = "Усі рівні міркування";
+"spend_speed_empty" = "Завершіть хід Codex та оновіть дані. Старі журнали можуть не містити даних про час.";

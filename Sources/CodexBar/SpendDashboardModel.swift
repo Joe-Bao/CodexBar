@@ -279,6 +279,8 @@ struct SpendDashboardModel: Equatable, Sendable {
         let provenance: CostProvenance
         let meteredCost: Double?
         let sessions: [SessionRow]
+        let performanceSamples: [CostUsageTurnPerformanceSample]
+        let performanceDomain: ClosedRange<Date>?
         let projects: [ProjectRow]
         var retainedDetailUpdatedAt: Date?
         var detailsExcludedFromTotals = false
@@ -322,6 +324,8 @@ struct SpendDashboardModel: Equatable, Sendable {
             provenance: CostProvenance = .unknown,
             meteredCost: Double? = nil,
             sessions: [SessionRow] = [],
+            performanceSamples: [CostUsageTurnPerformanceSample] = [],
+            performanceDomain: ClosedRange<Date>? = nil,
             selectedDay: Date? = nil,
             hourlyPoints: [HourlyPoint] = [],
             timeZone: TimeZone = .current)
@@ -342,6 +346,8 @@ struct SpendDashboardModel: Equatable, Sendable {
             self.provenance = provenance
             self.meteredCost = meteredCost
             self.sessions = sessions
+            self.performanceSamples = performanceSamples
+            self.performanceDomain = performanceDomain
             self.projects = projects
             self.selectedDay = selectedDay
             self.hourlyPoints = hourlyPoints
@@ -702,6 +708,12 @@ struct SpendDashboardModel: Equatable, Sendable {
                 bounds: detailBounds,
                 calendar: calendar,
                 selectedDay: selectedDay),
+            performanceSamples: Self.performanceSamples(
+                summaries: detailSummaries,
+                bounds: detailBounds,
+                calendar: calendar,
+                selectedDay: selectedDay),
+            performanceDomain: Self.chartDomain(bounds: detailBounds, calendar: calendar),
             selectedDay: selectedDay,
             hourlyPoints: hourlyPoints,
             timeZone: calendar.timeZone)

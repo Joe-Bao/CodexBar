@@ -2639,3 +2639,12 @@
 "Claude desktop app" = "Claude masaüstü uygulaması";
 "Use Claude desktop app cookies" = "Claude masaüstü uygulamasının çerezlerini kullan";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "Web kullanımı için tarayıcı hesabı yerine Claude.app içinde oturum açılan hesabı kullan.";
+
+// Codex speed trends.
+"spend_speed_tab" = "Hız";
+"spend_speed_title" = "Codex hız eğilimleri";
+"spend_speed_tps" = "Tur TPS";
+"spend_speed_latest" = "Son tur";
+"spend_speed_weighted" = "Süre ağırlıklı TPS";
+"spend_speed_all_efforts" = "Tüm akıl yürütme düzeyleri";
+"spend_speed_empty" = "Bir Codex turunu tamamlayıp yenileyin. Eski günlüklerde süre verileri bulunmayabilir.";

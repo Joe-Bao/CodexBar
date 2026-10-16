@@ -2640,3 +2640,12 @@
 "Claude desktop app" = "تطبيق Claude لسطح المكتب";
 "Use Claude desktop app cookies" = "استخدام ملفات تعريف الارتباط لتطبيق Claude لسطح المكتب";
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "لاستخدام الويب، اتبع الحساب المسجّل الدخول في Claude.app بدلاً من المتصفح.";
+
+// Codex speed trends.
+"spend_speed_tab" = "السرعة";
+"spend_speed_title" = "اتجاهات سرعة Codex";
+"spend_speed_tps" = "TPS لكل دور";
+"spend_speed_latest" = "آخر دور";
+"spend_speed_weighted" = "TPS مرجّح بالمدة";
+"spend_speed_all_efforts" = "كل مستويات الاستدلال";
+"spend_speed_empty" = "أكمل دورًا في Codex ثم حدّث. قد لا تحتوي السجلات القديمة على بيانات التوقيت.";

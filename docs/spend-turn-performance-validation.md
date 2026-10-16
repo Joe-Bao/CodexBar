@@ -52,6 +52,31 @@ There are no new dependencies, probes, or credentials.
   comes from the owning turn context. Missing, mixed, or conflicting attribution
   remains unknown; grouping does not rank model capabilities.
 
+## Speed trends (fork addition)
+
+Open **Settings → Usage & Spend → Speed**. Enable local cost tracking for Codex,
+complete a turn, and choose **Refresh** to load new observations. This view uses
+the existing local-history refresh cadence, not a live streaming connection.
+
+- The latest completed turn and the time-weighted TPS summarize the selected
+  history window, model, and reasoning effort. TPS is total output tokens divided
+  by total whole-turn seconds, including reasoning, tool execution, and waits.
+  It is not pure model decoding speed; input tokens are never counted as output.
+- Switch the chart between TPS and median first-model-token latency. Daily points
+  summarize all eligible turns in that day. Select a date in the menu below the
+  chart and choose **Hour** for hourly detail; **Overview** restores the range.
+- Missing timing remains unavailable. Lines break across unobserved buckets;
+  an absent first-token measurement does not become zero. Sample counts accompany
+  both metrics. Use the date picker or hover to inspect exact bucket values.
+- Date boundaries follow the dashboard's statistics time zone, including 23/25-hour
+  days. Repeated hours remain distinct and inspection labels include the UTC offset.
+- All validated native Codex sessions participate, before the cost-ranked 50-row
+  session display limit. Account/source filters and retained-history warnings still
+  apply. OpenCodex and other providers never inherit native Codex timings.
+
+This adds no network requests, credentials, background scanners, dependencies, or
+transcript storage. Existing billing totals and exports are unchanged.
+
 ## Verification
 
 Run the following with the repository's scrubbed test environment:
@@ -67,6 +92,17 @@ The fixtures cover duplicate ownership, incomplete and malformed timing,
 completion-only appends, midnight boundaries, sample thresholds, provider
 isolation, and bounded predecessor backfill preserving ledger rows and prices.
 The existing ledger and migration suites check the billing boundary.
+
+The speed projection and aggregation can be checked with:
+
+```sh
+make test-fast FILTER='CostUsageTurnPerformanceTrendTests|SpendSpeedTrendTests|SpendDashboardDetailStabilityTests'
+```
+
+Set `CODEXBAR_SPEED_UI_PROOF_DIR` to an output directory to render the production
+speed view with synthetic observations in English/Chinese, light/dark, and wide/
+narrow layouts. `SpendSpeedTrendTests` performs these renders without reading
+accounts or launching provider probes.
 
 For a headless render of production session rows, set
 `CODEXBAR_PERFORMANCE_UI_PROOF_DIR` to an empty output directory and optionally

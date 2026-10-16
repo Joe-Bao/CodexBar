@@ -581,6 +581,7 @@ enum SpendDashboardDetailSection: Hashable, Identifiable {
     case projects
     case chats
     case sessions
+    case speed
 
     var id: Self {
         self
@@ -592,6 +593,7 @@ enum SpendDashboardDetailSection: Hashable, Identifiable {
         case .projects: L("Projects")
         case .chats: L("Independent chats")
         case .sessions: L("Sessions")
+        case .speed: L("spend_speed_tab")
         }
     }
 }
@@ -609,6 +611,7 @@ func spendDashboardAvailableDetailSections(
     hasProjects: Bool,
     hasSessions: Bool,
     hasChats: Bool = false,
+    hasPerformance: Bool = false,
     supportsCodexDetails: Bool = false) -> [SpendDashboardDetailSection]
 {
     var sections: [SpendDashboardDetailSection] = [.providers]
@@ -620,6 +623,9 @@ func spendDashboardAvailableDetailSections(
     }
     if supportsCodexDetails || hasSessions {
         sections.append(.sessions)
+    }
+    if supportsCodexDetails || hasPerformance {
+        sections.append(.speed)
     }
     return sections
 }
@@ -720,6 +726,8 @@ struct SpendDashboardCurrencySection: View {
                 group: self.group,
                 hidePersonalInfo: self.hidePersonalInfo,
                 supportsCodexDetails: self.supportsCodexDetails,
+                onSelectDay: self.onSelectDay,
+                onClearSelectedDay: self.onClearSelectedDay,
                 selection: self.detailSelection ?? self.$selectedDetailSection)
             SpendDashboardTrendPanel(
                 group: self.group,
@@ -737,6 +745,8 @@ private struct SpendDashboardDetailPanel: View {
     let group: SpendDashboardModel.CurrencyGroup
     let hidePersonalInfo: Bool
     var supportsCodexDetails = false
+    var onSelectDay: ((Date) -> Void)?
+    var onClearSelectedDay: (() -> Void)?
     @Binding var selection: SpendDashboardDetailSection
 
     var body: some View {
@@ -751,13 +761,13 @@ private struct SpendDashboardDetailPanel: View {
                     .labelsHidden()
                     .pickerStyle(.segmented)
                     .controlSize(.small)
-                    .frame(maxWidth: 460, alignment: .leading)
+                    .frame(maxWidth: 560, alignment: .leading)
                     .accessibilityIdentifier("spend-dashboard-detail-picker")
                 }
 
                 self.detailContent
                 if self.activeSection != .providers {
-                    if self.group.projects.isEmpty, self.group.sessions.isEmpty {
+                    if self.activeSection != .speed, self.group.projects.isEmpty, self.group.sessions.isEmpty {
                         Text(L("No usage breakdown data available."))
                             .font(.caption).foregroundStyle(.secondary)
                     }
@@ -781,6 +791,7 @@ private struct SpendDashboardDetailPanel: View {
             hasProjects: self.group.projects.contains { !$0.isProjectless },
             hasSessions: !self.group.sessions.isEmpty,
             hasChats: self.group.projects.contains(where: \.isProjectless),
+            hasPerformance: !self.group.performanceSamples.isEmpty,
             supportsCodexDetails: self.supportsCodexDetails)
     }
 
@@ -805,6 +816,11 @@ private struct SpendDashboardDetailPanel: View {
             SpendProjectRows(group: self.group, hidePersonalInfo: self.hidePersonalInfo, isProjectless: true)
         case .sessions:
             SpendSessionRows(group: self.group, hidePersonalInfo: self.hidePersonalInfo)
+        case .speed:
+            SpendSpeedTrendView(
+                group: self.group,
+                onSelectDay: self.onSelectDay,
+                onClearSelectedDay: self.onClearSelectedDay)
         }
     }
 }
