@@ -88,6 +88,11 @@ extension SettingsStore {
         }
     }
 
+    var responseSpeedEnabled: Bool {
+        get { self.defaultsState.responseSpeedEnabled }
+        set { self.setDefault(\.responseSpeedEnabled, newValue, key: "responseSpeedEnabled") }
+    }
+
     var debugMenuEnabled: Bool {
         get { self.defaultsState.debugMenuEnabled }
         set { self.setDefault(\.debugMenuEnabled, newValue, key: "debugMenuEnabled") }

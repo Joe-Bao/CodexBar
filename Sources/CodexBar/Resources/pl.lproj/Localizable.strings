@@ -2641,10 +2641,34 @@
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "Dla użycia w sieci korzystaj z konta zalogowanego w Claude.app zamiast konta w przeglądarce.";
 
 // Codex speed trends.
-"spend_speed_tab" = "Szybkość";
+"spend_speed_tab" = "Turn history";
 "spend_speed_title" = "Trendy szybkości Codex";
 "spend_speed_tps" = "TPS na turę";
 "spend_speed_latest" = "Ostatnia tura";
 "spend_speed_weighted" = "TPS ważone czasem";
 "spend_speed_all_efforts" = "Wszystkie poziomy rozumowania";
 "spend_speed_empty" = "Zakończ turę Codex i odśwież. Starsze dzienniki mogą nie zawierać danych o czasie.";
+
+// Per-response menu bar speed.
+"response_speed_title" = "Model speed";
+"response_speed_subtitle" = "Latest responses · local Codex & Claude Code";
+"response_speed_window" = "Speed history";
+"response_speed_recent" = "Recent median (up to 5)";
+"response_speed_baseline" = "vs. prior 7 days";
+"response_speed_count" = "%d responses";
+"response_speed_short" = "Include responses under 200 output tokens";
+"response_speed_indexing" = "Reading recent local logs…";
+"response_speed_empty" = "No recent model responses";
+"response_speed_empty_help" = "Try a longer time range or include short responses. New results appear after a model response finishes.";
+"response_speed_help" = "Output tokens ÷ response time, including first-token wait and reasoning. Local tool waits are excluded when boundaries are known. Updates after responses; not streaming decode TPS.";
+"response_speed_unreadable" = "Some local logs could not be read. Results may be incomplete.";
+"response_speed_limited" = "Showing bounded recent history; older samples may be omitted.";
+"response_speed_power" = "Power saving: refresh manually for new responses.";
+"response_speed_idle" = "Idle";
+"response_speed_chart" = "Response speed trend";
+"response_speed_chart_help" = "Each point is a completed response. Long histories are sampled for display; statistics use all responses.";
+"response_speed_setting" = "Show TPS in the menu bar";
+"response_speed_setting_help" = "Reads local Codex and Claude Code session logs for per-response speed. Independent of cost tracking; no credentials or network requests.";
+"response_speed_now" = "Just now";
+"response_speed_unit" = "tok/s";
+"response_speed_time" = "Time";

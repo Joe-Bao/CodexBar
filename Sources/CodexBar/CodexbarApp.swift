@@ -383,6 +383,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     })
 
     private var statusController: StatusItemControlling?
+    private var responseSpeedController: ResponseSpeedController?
     private var store: UsageStore?
     private var settings: SettingsStore?
     private var account: AccountInfo?
@@ -470,6 +471,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #endif
         self.ensureStatusController()
         self.observeSettingsApplicationMenuLanguage()
+        if !SettingsStore.isRunningTests, let settings = self.settings {
+            self.responseSpeedController = ResponseSpeedController(settings: settings) { [weak self] in
+                self?.openSettings(pane: .general)
+            }
+        }
         self.scheduleSettingsApplicationMenuValidation(
             missingItemRetriesRemaining: Self.settingsMenuReadinessRetryCount,
             fallbackVerificationRetriesRemaining: Self.settingsMenuFallbackVerificationRetryCount)
@@ -528,6 +534,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        self.responseSpeedController?.stop()
         self.cloudSyncCoordinator?.stop()
         self.memoryPressureMonitor.stop()
         #if DEBUG

@@ -567,6 +567,7 @@ extension SettingsStore {
             refreshAllProvidersOnMenuOpen: userDefaults.object(
                 forKey: "refreshAllProvidersOnMenuOpen") as? Bool ?? false,
             launchAtLogin: userDefaults.object(forKey: "launchAtLogin") as? Bool ?? false,
+            responseSpeedEnabled: userDefaults.object(forKey: "responseSpeedEnabled") as? Bool ?? true,
             debugMenuEnabled: userDefaults.object(forKey: "debugMenuEnabled") as? Bool ?? false,
             debugDisableKeychainAccess: debugDisableKeychainAccess,
             debugFileLoggingEnabled: userDefaults.object(forKey: "debugFileLoggingEnabled") as? Bool ?? false,

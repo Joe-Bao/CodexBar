@@ -6,6 +6,7 @@ struct SettingsDefaultsState {
     var adaptiveActivityScanConsent: AdaptiveActivityScanConsent
     var refreshAllProvidersOnMenuOpen: Bool
     var launchAtLogin: Bool
+    var responseSpeedEnabled: Bool = true
     var debugMenuEnabled: Bool
     var debugDisableKeychainAccess: Bool
     var debugFileLoggingEnabled: Bool

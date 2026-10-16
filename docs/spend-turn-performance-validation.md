@@ -54,9 +54,11 @@ There are no new dependencies, probes, or credentials.
 
 ## Speed trends (fork addition)
 
-Open **Settings → Usage & Spend → Speed**. Enable local cost tracking for Codex,
+Open **Settings → Usage & Spend → Turn history**. Enable local cost tracking for Codex,
 complete a turn, and choose **Refresh** to load new observations. This view uses
 the existing local-history refresh cadence, not a live streaming connection.
+
+The menu bar TPS meter uses separate, per-response observations; see [response speed](response-speed.md).
 
 - The latest completed turn and the time-weighted TPS summarize the selected
   history window, model, and reasoning effort. TPS is total output tokens divided

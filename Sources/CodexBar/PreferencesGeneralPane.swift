@@ -133,6 +133,9 @@ struct GeneralPane: View {
                     })
 
                 Toggle(L("start_at_login_title"), isOn: self.$settings.launchAtLogin)
+                Toggle(isOn: self.$settings.responseSpeedEnabled) {
+                    SettingsRowLabel(L("response_speed_setting"), subtitle: L("response_speed_setting_help"))
+                }
             } header: {
                 Text(L("section_system"))
             }

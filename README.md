@@ -2,11 +2,13 @@
 
 > Every AI coding limit, in your menu bar.
 
-**This fork adds macOS Codex speed trends:** open **Settings → Usage & Spend → Speed**
-for latest-turn TPS, time-weighted TPS, and daily/hourly TPS or first-token latency
-charts, with model and reasoning-effort filters. These are local, completed-turn
-measurements **including tools and waits**, not live model decoding speed.
-See the [metric contract](docs/spend-turn-performance-validation.md#speed-trends-fork-addition).
+**This fork adds a TPS menu bar meter:** click the speedometer for per-model
+response speed, sparklines, P50/P90 and a recent-versus-usual comparison. It reads
+local Codex and Claude Code logs incrementally, independently of cost tracking.
+The unit is **one model response**, with known local tool waits excluded; first-token
+wait and reasoning remain included. This is not streaming decode TPS.
+See the [response-speed contract](docs/response-speed.md). The older whole-turn
+analysis remains under **Settings → Usage & Spend → Turn history**.
 Build this branch with `./Scripts/package_app.sh debug`; the upstream releases
 linked below do not include this fork's changes. Local builds use ad-hoc signing.
 

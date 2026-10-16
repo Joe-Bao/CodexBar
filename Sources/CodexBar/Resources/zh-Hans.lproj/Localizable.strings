@@ -2630,10 +2630,34 @@
 "For Web usage, follow the account signed into Claude.app instead of a browser." = "查询网页使用量时，使用 Claude.app 中登录的账户，而不是浏览器账户。";
 
 // Codex speed trends.
-"spend_speed_tab" = "速度";
+"spend_speed_tab" = "整轮历史";
 "spend_speed_title" = "Codex 速度趋势";
 "spend_speed_tps" = "整轮 TPS";
 "spend_speed_latest" = "最近一轮";
 "spend_speed_weighted" = "按耗时加权 TPS";
 "spend_speed_all_efforts" = "所有推理强度";
 "spend_speed_empty" = "完成一轮 Codex 对话后刷新。旧日志可能不包含计时数据。";
+
+// Per-response menu bar speed.
+"response_speed_title" = "模型速度";
+"response_speed_subtitle" = "最近的模型响应 · 本地 Codex 与 Claude Code";
+"response_speed_window" = "速度历史";
+"response_speed_recent" = "近期中位数（最多 5 次）";
+"response_speed_baseline" = "对比此前 7 天";
+"response_speed_count" = "%d 次响应";
+"response_speed_short" = "包含不足 200 输出 token 的短响应";
+"response_speed_indexing" = "正在读取近期本地日志…";
+"response_speed_empty" = "暂无近期模型响应";
+"response_speed_empty_help" = "可扩大时间范围或包含短响应。模型完成一次响应后，会显示新的结果。";
+"response_speed_help" = "输出 token ÷ 单次响应耗时，含首 token 等待与推理；边界明确时排除本地工具等待。响应结束后更新，并非流式解码 TPS。";
+"response_speed_unreadable" = "部分本地日志无法读取，结果可能不完整。";
+"response_speed_limited" = "当前展示有限的近期历史，部分较早样本可能未包含。";
+"response_speed_power" = "节能模式：可手动刷新以读取新响应。";
+"response_speed_idle" = "空闲";
+"response_speed_chart" = "单次响应速度趋势";
+"response_speed_chart_help" = "每个点代表一次已完成响应。较长历史会抽样绘图，统计值使用全部响应。";
+"response_speed_setting" = "在菜单栏显示 TPS";
+"response_speed_setting_help" = "读取本地 Codex 与 Claude Code 会话日志，计算单次响应速度。独立于费用统计，不需要凭据或网络请求。";
+"response_speed_now" = "刚刚";
+"response_speed_unit" = "tok/s";
+"response_speed_time" = "时间";

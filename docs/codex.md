@@ -594,10 +594,14 @@ day; billing keeps its existing request dates and range totals. No timing appear
 Whole-turn output includes reasoning, tools, and waits; first model token can precede visible answer text.
 See the [metric contract and synthetic verification](spend-turn-performance-validation.md).
 
-This fork also exposes **Usage & Spend → Speed**: latest-turn and time-weighted TPS,
+This fork also exposes **Usage & Spend → Turn history**: latest-turn and time-weighted TPS,
 daily/hourly speed and first-token trends, and model/effort filters. It uses the same
 validated whole-turn measurements, including tools and waits, rather than streaming
 generation speed. See [speed trends](spend-turn-performance-validation.md#speed-trends-fork-addition).
+
+For per-response measurements, click this fork's **TPS speedometer in the menu bar**.
+It shows each model's recent median and trends without enabling cost tracking.
+See the separate [response-speed contract](response-speed.md).
 
 The collapsed **Tool activity** section reads native operations only when expanded. It separates recorded
 durations, nonzero exits, tool errors and unknown outcomes, with All / Needs review / Slow filters and
