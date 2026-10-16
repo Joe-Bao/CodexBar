@@ -32,6 +32,7 @@
 - Qwen Cloud: treat a Team summary with an empty `Data` object as no Team subscription, so Individual-only accounts no longer show "Team usage unavailable" (#4527, #4525). Thanks @harjothkhara and @mvicari!
 - Antigravity: prefer explicit OAuth paid-tier labels and hide a contradictory Free label when measured five-hour quotas are available (#4565). Thanks @mvicari!
 - Plugins: show quota gauges on user-plugin tabs and allow enabled plugins in the Overview provider picker (#4471). Thanks @soimy!
+- Settings: manage an opt-in HTTP usage server with local token storage, VPN/Tailscale binding controls, and automatic start/stop with the Mac app (#4430). Thanks @gmkbenjamin!
 
 ## 0.76.0 — 2026-10-15
 
