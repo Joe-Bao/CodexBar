@@ -148,7 +148,9 @@ public actor ResponseSpeedScanner {
                     }
                     try handle.seek(toOffset: state.offset)
                     while remaining > 0, state.offset < UInt64(size), !Task.isCancelled {
-                        let data = try handle.read(upToCount: min(64 * 1024, remaining)) ?? Data()
+                        // Match this pass's stat snapshot even if the agent appends while we are reading.
+                        let count = min(64 * 1024, remaining, size - Int(state.offset))
+                        let data = try handle.read(upToCount: count) ?? Data()
                         guard !data.isEmpty else { break }
                         state.offset += UInt64(data.count)
                         state.tail = Data((state.tail + data).suffix(64))
