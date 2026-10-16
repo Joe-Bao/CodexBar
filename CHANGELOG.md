@@ -31,6 +31,7 @@
 - OpenCode Go: include v2 session history in local cost and token totals without counting migrated messages twice (#4526). Thanks @edtheflame!
 - Qwen Cloud: treat a Team summary with an empty `Data` object as no Team subscription, so Individual-only accounts no longer show "Team usage unavailable" (#4527, #4525). Thanks @harjothkhara and @mvicari!
 - Antigravity: prefer explicit OAuth paid-tier labels and hide a contradictory Free label when measured five-hour quotas are available (#4565). Thanks @mvicari!
+- Plugins: show quota gauges on user-plugin tabs and allow enabled plugins in the Overview provider picker (#4471). Thanks @soimy!
 
 ## 0.76.0 — 2026-10-15
 
