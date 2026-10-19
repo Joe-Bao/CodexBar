@@ -53,9 +53,12 @@ final class ResponseSpeedModel {
     }
 
     var statusTitle: String {
-        guard let active else { return "TPS" }
-        let arrow = active.change.map { abs($0) >= 10 ? ($0 > 0 ? " ↑" : " ↓") : "" } ?? ""
-        return "\(Self.rate(active.recentMedian)) tok/s\(arrow)"
+        guard let statusRate else { return "TPS" }
+        return "\(statusRate) TPS"
+    }
+
+    var statusRate: String? {
+        self.active.map { Self.rate($0.recentMedian) }
     }
 
     static func rate(_ value: Double) -> String {

@@ -2,7 +2,7 @@
 
 > Every AI coding limit, in your menu bar.
 
-**This fork adds a TPS menu bar meter:** click the speedometer for per-model
+**This fork adds a compact TPS menu bar meter:** click the two-line speed readout for per-model
 response speed, sparklines, P50/P90 and a recent-versus-usual comparison. It reads
 local Codex and Claude Code logs incrementally, independently of cost tracking.
 The unit is **one model response**, with known local tool waits excluded; first-token

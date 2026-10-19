@@ -1,6 +1,6 @@
 # Response speed meter (fork)
 
-The speedometer is a separate status item inside CodexBar, enabled by default in
+The compact two-line speed readout is a separate status item inside CodexBar, enabled by default in
 this fork. It does not replace quota icons or require Track costs. Disable it in
 General → Show TPS in the menu bar. Click it to see per-model cards and select
 15m, 1h, 24h or 7d. The meter reads local Codex and Claude Code logs only.

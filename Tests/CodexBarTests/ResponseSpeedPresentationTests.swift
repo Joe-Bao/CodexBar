@@ -10,10 +10,20 @@ struct ResponseSpeedPresentationTests {
     func `menu bar uses recent response median and retires stale values`() {
         let model = Self.model()
         #expect(model.active != nil)
-        #expect(model.statusTitle.contains("tok/s"))
+        #expect(model.statusTitle.contains("TPS"))
         model.now = model.now.addingTimeInterval(1900)
         #expect(model.active == nil)
         #expect(model.statusTitle == "TPS")
+    }
+
+    @Test
+    func `menu bar speed label leaves room for the quota item`() {
+        for rate in [nil, "9.9", "72.4", "999.9"] {
+            let image = ResponseSpeedStatusImage.render(rate: rate)
+            #expect(image.size.width <= 40)
+            #expect(image.size.height == 22)
+            #expect(image.isTemplate)
+        }
     }
 
     @Test
@@ -35,6 +45,13 @@ struct ResponseSpeedPresentationTests {
         try FileManager.default.createDirectory(
             at: root,
             withIntermediateDirectories: true)
+        for rate in ["72.4", "999.9"] {
+            let image = ResponseSpeedStatusImage.render(rate: rate)
+            let tiff = try #require(image.tiffRepresentation)
+            let bitmap = try #require(NSBitmapImageRep(data: tiff))
+            try #require(bitmap.representation(using: .png, properties: [:]))
+                .write(to: root.appendingPathComponent("response-speed-status-\(rate).png"))
+        }
         for language in ["en", "zh-Hans"] {
             for dark in [false, true] {
                 try await CodexBarLocalizationOverride.$appLanguage.withValue(language) {

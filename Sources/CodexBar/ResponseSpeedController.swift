@@ -14,6 +14,7 @@ final class ResponseSpeedController: NSObject {
     private var task: Task<Void, Never>?
     private var generation = 0
     private var stopped = false
+    private var lastRenderedStatusTitle: String?
     private let openSettings: () -> Void
 
     init(
@@ -74,12 +75,18 @@ final class ResponseSpeedController: NSObject {
             item.button?.font = NSFont.monospacedDigitSystemFont(
                 ofSize: 12,
                 weight: .medium)
-            item.button?.image = NSImage(
-                systemSymbolName: "speedometer",
-                accessibilityDescription: nil)
-            item.button?.imagePosition = .imageLeft
             item.button?.setAccessibilityIdentifier("codexbar-response-speed")
             self.item = item
+            if MenuBarStatusItemWindowProbe.diagnosticsEnabled {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+                    guard let item = self?.item else { return }
+                    let rightArea = item.button?.window?.screen?.auxiliaryTopRightArea
+                    MenuBarStatusItemWindowProbe.trace(
+                        "response-speed-settled",
+                        item: item,
+                        evidence: "cameraSafeRightArea=\(rightArea.map(NSStringFromRect) ?? "none")")
+                }
+            }
         }
         self.updateTitle()
         self.refresh()
@@ -112,7 +119,14 @@ final class ResponseSpeedController: NSObject {
     }
 
     private func updateTitle() {
-        self.item?.button?.title = " " + self.model.statusTitle
+        let title = self.model.statusTitle
+        if let button = self.item?.button, button.image == nil || self.lastRenderedStatusTitle != title {
+            button.title = ""
+            button.image = ResponseSpeedStatusImage.render(rate: self.model.statusRate)
+            button.imagePosition = .imageOnly
+            button.imageScaling = .scaleNone
+            self.lastRenderedStatusTitle = title
+        }
         if let active = self.model.active {
             self.item?.button?.toolTip = "\(active.key.source.title) · \(active.key.model)\n"
                 + L("response_speed_recent") + " · \(ResponseSpeedModel.rate(active.recentMedian)) tok/s"
