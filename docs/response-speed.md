@@ -71,8 +71,14 @@ use synthetic models in English/Chinese and light/dark appearances.
 ```sh
 make test-fast FILTER='ResponseSpeedParserTests|ResponseSpeedScannerTests|ResponseSpeedSummaryTests|ResponseSpeedPresentationTests'
 make check
-CODEXBAR_SIGNING=adhoc ./Scripts/package_app.sh debug
+CODEXBAR_SIGNING=adhoc ./Scripts/package_app.sh release
 ```
+
+This fork includes the upstream v0.77.0 release tag. The local release build uses
+the standard `com.steipete.codexbar` application identifier. Keep one installed
+bundle at `/Applications/CodexBar.app`; move the packaged bundle there instead of
+leaving launchable copies in the repository or output folders. Ad-hoc builds
+disable automatic updates and cannot use the upstream team's iCloud entitlements.
 
 The presentation takes inspiration from Tokometer. The implementation uses this
 repository's Swift/AppKit/SwiftUI stack and does not vendor Tokometer source or binaries.

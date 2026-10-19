@@ -9,8 +9,10 @@ The unit is **one model response**, with known local tool waits excluded; first-
 wait and reasoning remain included. This is not streaming decode TPS.
 See the [response-speed contract](docs/response-speed.md). The older whole-turn
 analysis remains under **Settings → Usage & Spend → Turn history**.
-Build this branch with `./Scripts/package_app.sh debug`; the upstream releases
-linked below do not include this fork's changes. Local builds use ad-hoc signing.
+This branch includes upstream's **v0.77.0** release. Build it with
+`CODEXBAR_SIGNING=adhoc ./Scripts/package_app.sh release`; the upstream releases
+linked below do not include this fork's changes. Local builds use ad-hoc signing,
+with automatic updates and official iCloud sync unavailable.
 
 [![Latest release](https://img.shields.io/github/v/release/steipete/CodexBar?style=flat-square&color=0a0a0c)](https://github.com/steipete/CodexBar/releases/latest)
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-0a0a0c?style=flat-square)](https://github.com/steipete/CodexBar/releases/latest)
@@ -20,7 +22,7 @@ linked below do not include this fork's changes. Local builds use ad-hoc signing
 [![License: MIT](https://img.shields.io/badge/license-MIT-6e5aff?style=flat-square)](LICENSE)
 [![Site](https://img.shields.io/badge/site-codexbar.app-16d3b4?style=flat-square)](https://codexbar.app)
 
-<a href="https://codexbar.app"><img src="docs/social.png?v=3127a233986e3638" alt="CodexBar — every AI coding limit in your menu bar. 104 providers." width="100%" /></a>
+<a href="https://codexbar.app"><img src="docs/social.png?v=8f9e451056014143" alt="CodexBar — every AI coding limit in your menu bar. 106 providers." width="100%" /></a>
 
 Tiny macOS 14+ menu bar app that keeps **AI coding-provider limits visible** and shows when each window resets. See the [supported providers](#providers) below. One status item per provider, or Merge Icons mode with a provider switcher. No Dock icon, minimal UI, dynamic bar icons.
 
@@ -195,6 +197,7 @@ See [CLI configuration](docs/cli-configuration.md) for the full flow.
 <!-- Generated provider additions: Scripts/regenerate-provider-docs.mjs -->
 - [Langdock](docs/langdock.md) — Selected Edge, Chrome, or Safari profile → personal included session and weekly limits (`web`, macOS).
 - [X API](docs/xapi.md) — Browser or manual console.x.com cookies for prepaid and free credits, including negative balances.
+- [Future AGI](docs/futureagi.md) — API key and secret key (billing-period usage, allowances, and estimated cost).
 - [LithosAI](docs/lithosai.md) — Browser or manual console cookies for prepaid USD balance and optional UTC spend.
 - [WorkBuddy](docs/workbuddy.md) — Chrome or manual www.workbuddy.cn cookies for the monthly credits allowance, plan name, and cycle reset.
 - [Tavily](docs/tavily.md) — API key for account-plan, per-key, and pay-as-you-go credit totals.
@@ -209,6 +212,7 @@ See [CLI configuration](docs/cli-configuration.md) for the full flow.
 - [FLORA](docs/flora.md) — API key with billing permission plus a workspace ID for the available USD balance and month-to-date spend.
 - [Parallel](docs/parallel.md) — Browser session on platform.parallel.ai for the prepaid credit balance and pending debit.
 - [Claude Platform](docs/claudeplatform.md) — Browser or manual platform.claude.com session cookies for Console API credit balance, expiring credit grants, and month-to-date spend.
+- [Munito](docs/munito.md) — Admin API key with Read account data permission for today's and this month's spend against the organization's spend limits.
 <!-- End generated provider additions -->
 
 ## Icon & Screenshot
